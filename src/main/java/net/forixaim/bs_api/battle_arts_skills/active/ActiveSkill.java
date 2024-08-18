@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.ModList;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
