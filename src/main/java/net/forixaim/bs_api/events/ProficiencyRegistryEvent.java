@@ -5,7 +5,6 @@ import net.forixaim.bs_api.proficiencies.Proficiency;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.IModBusEvent;
-import yesman.epicfight.skill.Skill;
 
 import java.util.List;
 import java.util.Set;

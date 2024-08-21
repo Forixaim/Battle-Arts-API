@@ -2,6 +2,7 @@ package net.forixaim.bs_api.proficiencies;
 
 import com.google.common.collect.Lists;
 import net.forixaim.bs_api.battle_arts_skills.battle_style.BattleStyle;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -9,27 +10,17 @@ import java.util.List;
 public class Proficiency
 {
 	private final ResourceLocation identifier;
-	private ProficiencyRank rank;
+	private final Component displayName;
 	public Proficiency(Builder<? extends Proficiency> builder)
 	{
 		this.identifier = builder.identifier;
-		this.rank = ProficiencyRank.E;
+		displayName = Component.translatable("proficiencies." + this.identifier.getNamespace() + "." + this.identifier.getPath() + ".name");
 	}
 
-	public ProficiencyRank getRank()
-	{
-		return rank;
-	}
 
-	private Proficiency(ResourceLocation identifier, ProficiencyRank rank, int xp, int xp_threshold)
+	public Component getDisplayName()
 	{
-		this.identifier = identifier;
-		this.rank = rank;
-	}
-
-	public static Proficiency loadProficiency(ResourceLocation identifier, ProficiencyRank rank, int xp, int xp_threshold)
-	{
-		return new Proficiency(identifier, rank, xp, xp_threshold);
+		return displayName;
 	}
 
 	public ResourceLocation getIdentifier()

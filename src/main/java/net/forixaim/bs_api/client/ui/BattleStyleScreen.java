@@ -33,7 +33,7 @@ public class BattleStyleScreen extends Screen
 
 	private static final int MAX_SHOWING_BUTTONS = 5;
 
-	protected BattleStyleScreen(Player player, CapabilitySkill skills)
+	public BattleStyleScreen(Player player, CapabilitySkill skills)
 	{
 		super(Component.translatable("ui.battle_style.title"));
 		this.skills = skills;

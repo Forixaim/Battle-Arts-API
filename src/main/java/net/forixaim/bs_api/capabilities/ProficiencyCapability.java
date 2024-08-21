@@ -18,7 +18,10 @@ public class ProficiencyCapability
 	public ProficiencyCapability()
 	{
 		proficiencies = Lists.newArrayList();
-		ProficiencyManager.assignNewProficiencies().forEach(proficiency -> proficiencies.add(new ProficiencyContainer(ProficiencyRank.E, 0, proficiency)));
+		for (Proficiency proficiency : ProficiencyManager.REGISTERED_PROFICIENCIES)
+		{
+			proficiencies.add(new ProficiencyContainer(ProficiencyRank.E, 0, proficiency));
+		}
 	}
 
 	public void refreshProficiencies()
@@ -26,14 +29,18 @@ public class ProficiencyCapability
 		if (proficiencies != null)
 		{
 			proficiencies.clear();
-			ProficiencyManager.assignNewProficiencies().forEach(proficiency -> proficiencies.add(new ProficiencyContainer(ProficiencyRank.E, 0, proficiency)));
-
+			for (Proficiency proficiency : ProficiencyManager.REGISTERED_PROFICIENCIES)
+			{
+				proficiencies.add(new ProficiencyContainer(ProficiencyRank.E, 0, proficiency));
+			}
 		}
 		else
 		{
 			proficiencies = Lists.newArrayList();
-			ProficiencyManager.assignNewProficiencies().forEach(proficiency -> proficiencies.add(new ProficiencyContainer(ProficiencyRank.E, 0, proficiency)));
-		}
+			for (Proficiency proficiency : ProficiencyManager.REGISTERED_PROFICIENCIES)
+			{
+				proficiencies.add(new ProficiencyContainer(ProficiencyRank.E, 0, proficiency));
+			}		}
 	}
 
 
@@ -47,13 +54,12 @@ public class ProficiencyCapability
 			CompoundTag proficiencyTag = new CompoundTag();
 			for (final ProficiencyContainer proficiencyContainer : proficiencies)
 			{
-				proficiencyTag = new CompoundTag();
 				CompoundTag mainTag = new CompoundTag();
 				mainTag.putString("identifier", proficiencyContainer.getContainingProficiency().getIdentifier().toString());
 				mainTag.putInt("rank", proficiencyContainer.getCurrentRank().getId());
 				mainTag.putInt("current_xp", proficiencyContainer.getCurrentXp());
 				mainTag.putInt("to_next_level", proficiencyContainer.getLevelThreshold());
-				proficiencyTag.put("proficiency", mainTag);
+				proficiencyTag.put("proficiency:" + proficiencyContainer.getContainingProficiency().getIdentifier().toString(), mainTag);
 			}
 			tag.put("proficiencies", proficiencyTag);
 		}
@@ -83,33 +89,45 @@ public class ProficiencyCapability
 		if (tag.contains("proficiencies"))
 		{
 			if (proficiencies != null)
-				proficiencies.clear();
+				refreshProficiencies();
 			else
 				proficiencies = Lists.newArrayList();
 			for (String key : tag.getAllKeys())
 			{
 				if (tag.get(key) instanceof CompoundTag proficiencyTag)
 				{
-					if (proficiencyTag.get("proficiency") instanceof CompoundTag mainTag)
+					for (ProficiencyContainer proficiencyContainer : proficiencies)
 					{
-						ResourceLocation identifier = new ResourceLocation(mainTag.getString("identifier"));
-						List<ResourceLocation> registeredProficiencies = ProficiencyManager.getRegisteredProficiencies();
-
-						if (registeredProficiencies.contains(identifier))
+						if (proficiencyTag.get("proficiency:" + proficiencyContainer.getContainingProficiency().getIdentifier().toString()) instanceof CompoundTag mainTag)
 						{
-							Proficiency loadedProficiency = null;
-							for (Proficiency proficiency : ProficiencyManager.REGISTERED_PROFICIENCIES)
+							ResourceLocation identifier = new ResourceLocation(mainTag.getString("identifier"));
+							List<ResourceLocation> registeredProficiencies = ProficiencyManager.getRegisteredProficiencies();
+
+							if (registeredProficiencies.contains(identifier))
 							{
-								if (proficiency.getIdentifier().equals(identifier))
-									loadedProficiency = proficiency;
+								Proficiency loadedProficiency = null;
+								for (Proficiency proficiency : ProficiencyManager.REGISTERED_PROFICIENCIES)
+								{
+									if (proficiency.getIdentifier().equals(identifier))
+										loadedProficiency = proficiency;
+								}
+								if (loadedProficiency == null)
+								{
+									throw new NullPointerException("Could not find proficiency with identifier " + identifier);
+								}
+								//Rewrites new proficiency data with saved one
+								for (int index = 0; index < registeredProficiencies.size(); index++)
+								{
+									if (proficiencies.get(index).getContainingProficiency() == loadedProficiency)
+									{
+										proficiencies.set(index, new ProficiencyContainer(ProficiencyRank.getRankFromId(mainTag.getInt("rank")), mainTag.getInt("current_xp"), loadedProficiency));
+									}
+								}
 							}
-							if (loadedProficiency == null)
-							{
-								throw new NullPointerException("Could not find proficiency with identifier " + identifier);
-							}
-							proficiencies.add(new ProficiencyContainer(ProficiencyRank.getRankFromId(mainTag.getInt("rank")), mainTag.getInt("current_xp"), loadedProficiency));
+
 						}
 					}
+
 				}
 			}
 		}

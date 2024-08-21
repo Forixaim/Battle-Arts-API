@@ -81,7 +81,7 @@ public abstract class BattleStyle extends Skill
 		return false;
 	}
 
-	public int getProficiencyXpPerKill()
+	public int getProficiencyBonus()
 	{
 		return proficiencyXpPerKill;
 	}
@@ -177,7 +177,7 @@ public abstract class BattleStyle extends Skill
 		poseStack.popPose();
 	}
 
-	public static class Builder<T extends BattleStyle> extends Skill.Builder<T>
+	public static class Builder<T extends BattleStyle> extends Skill.Builder<BattleStyle>
 	{
 		protected List<Proficiency> proficiencies;
 		protected BattleStyleCategory battleStyleCategory;
