@@ -7,7 +7,7 @@
   "rank.bs_api.d_plus": "D+",
   "rank.bs_api.c": "C",
   "rank.bs_api.c_plus": "C+",
-  "rank.bs_api.b_minus": "C++",
+  "rank.bs_api.b_minus": "B-",
   "rank.bs_api.b": "B",
   "rank.bs_api.b_plus": "B+",
   "rank.bs_api.a_minus": "A-",
@@ -22,5 +22,9 @@
   "rank.bs_api.gx": "GX",
   "rank.bs_api.cx": "CX",
   "ui.battle_style.title": "Battle Style Selection",
-  "command.bs_api.no_proficiency": "No proficiencies exist for this entity."
+  "command.bs_api.no_proficiency": "No proficiencies exist for this entity.",
+  "gui.bs_api.proficiency.view": "Proficiency Viewer",
+
+  "skill.bs_api.traveler": "Traveler",
+  "skill.bs_api.traveler.tooltip": "Not meant to be used."
 }

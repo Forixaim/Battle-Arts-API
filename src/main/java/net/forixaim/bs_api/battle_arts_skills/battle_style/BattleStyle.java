@@ -22,6 +22,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
+import yesman.epicfight.api.animation.AnimationProvider;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.ParseUtil;
@@ -30,6 +31,8 @@ import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.item.Style;
+import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
 import java.util.List;
 import java.util.Map;
@@ -55,7 +58,8 @@ public abstract class BattleStyle extends Skill
 
 	private final Map<Attribute, AttributeModifier> BattleStyleStatModifier;
 	protected Map<LivingMotion, StaticAnimation> livingMotionModifiers;
-	protected Skill associatedBasicAttack;
+	protected List<Pair<WeaponCategory, AnimationProvider<StaticAnimation>>> weaponDrawAnimations;
+	protected boolean modifiesAttacks;
 
 	public BattleStyle(Builder<?> builder)
 	{
@@ -66,6 +70,7 @@ public abstract class BattleStyle extends Skill
 		this.immuneModdedDamages = Lists.newArrayList();
 		this.requiredProficiencies = Lists.newArrayList();
 		this.proficiencySpecialization = Lists.newArrayList();
+		this.weaponDrawAnimations = Lists.newArrayList();
 		this.category = builder.battleStyleCategory;
 	}
 
@@ -88,7 +93,7 @@ public abstract class BattleStyle extends Skill
 
 	public static Builder<BattleStyle> createBattleStyleBuilder()
 	{
-		return new Builder<>().setCategory(BattleArtsSkillCategories.BATTLE_STYLE);
+		return new Builder<>().setCategory(BattleArtsSkillCategories.BATTLE_STYLE).setResource(Resource.NONE);
 	}
 
 	public List<ResourceKey<DamageType>> getImmuneDamages()
@@ -100,9 +105,14 @@ public abstract class BattleStyle extends Skill
 		return immuneModdedDamages;
 	}
 
-	public Skill getAssociatedBasicAttack()
+	public boolean canModifyAttacks()
 	{
-		return associatedBasicAttack;
+		return modifiesAttacks;
+	}
+
+	public List<Pair<WeaponCategory, AnimationProvider<StaticAnimation>>> getWeaponDrawAnimations()
+	{
+		return weaponDrawAnimations;
 	}
 
 	public Map<LivingMotion, StaticAnimation> getLivingMotionModifiers(LivingEntityPatch<?> entityPatch)

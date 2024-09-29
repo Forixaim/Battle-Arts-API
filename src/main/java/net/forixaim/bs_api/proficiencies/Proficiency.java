@@ -17,6 +17,10 @@ public class Proficiency
 		displayName = Component.translatable("proficiencies." + this.identifier.getNamespace() + "." + this.identifier.getPath() + ".name");
 	}
 
+	public ResourceLocation getTextureLocation()
+	{
+		return new ResourceLocation(identifier.getNamespace(), "textures/proficiencies/" + this.identifier.getPath() + ".png");
+	}
 
 	public Component getDisplayName()
 	{

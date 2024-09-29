@@ -17,9 +17,9 @@ public class KeyBinds
 	public static final String ULTIMATE_ART = "key." + BattleArtsAPI.MOD_ID + ".ultimate_art_use";
 
 	public static final KeyMapping SHOW_PROFICIENCY_MENU = new KeyMapping(VIEW_PROFICIENCIES, KeyConflictContext.IN_GAME,
-			InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_L, CATEGORY_EFBS_SKILLS);
-	public static final KeyMapping SHOW_BATTLE_STYLE_MENU = new KeyMapping(BATTLE_STYLE_MENU, KeyConflictContext.IN_GAME,
 			InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_SEMICOLON, CATEGORY_EFBS_SKILLS);
+	public static final KeyMapping SHOW_BATTLE_STYLE_MENU = new KeyMapping(BATTLE_STYLE_MENU, KeyConflictContext.IN_GAME,
+			InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_APOSTROPHE, CATEGORY_EFBS_SKILLS);
 	public static final KeyMapping USE_ART_1 = new KeyMapping(COMBAT_ART_1, KeyConflictContext.IN_GAME,
 			InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, CATEGORY_EFBS_SKILLS);
 	public static final KeyMapping USE_TAUNT = new KeyMapping(TAUNT, KeyConflictContext.IN_GAME,

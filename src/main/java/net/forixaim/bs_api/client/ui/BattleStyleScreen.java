@@ -25,7 +25,7 @@ import java.util.Locale;
 
 public class BattleStyleScreen extends Screen
 {
-	private static final ResourceLocation BATTLE_STYLE_UI = new ResourceLocation(BattleArtsAPI.MOD_ID, "textures/gui/battle_style.png");
+	private static final ResourceLocation BATTLE_STYLE_UI = new ResourceLocation(BattleArtsAPI.MOD_ID, "textures/gui/proficiencies.png");
 	private final CapabilitySkill skills;
 	private final List<BattleStyleButton> battleStyleButtons = Lists.newArrayList();
 	private final Player player;
@@ -44,7 +44,7 @@ public class BattleStyleScreen extends Screen
 	public void renderBackground(@NotNull GuiGraphics guiGraphics)
 	{
 		super.renderBackground(guiGraphics);
-		guiGraphics.blit(BATTLE_STYLE_UI, this.width / 2 - 104, this.height / 2 - 100, 0, 0, 208, 200);
+		guiGraphics.blit(BATTLE_STYLE_UI, this.width / 2 - 128, this.height / 2 - 128 , 0, 0, 512, 1024);
 	}
 
 	@Override

@@ -15,32 +15,46 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
+import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
+import yesman.epicfight.world.capabilities.item.Style;
+import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(BattleArtsAPI.MOD_ID)
 public class BattleArtsAPI
 {
-    public static final String MOD_ID = "bs_api";
+    public static final String MOD_ID = "battlearts_api";
     private static final Logger LOGGER = LogUtils.getLogger();
     public BattleArtsAPI() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         BattleStyleCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleStyleCategories.class);
         SkillCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillCategories.class);
         SkillSlot.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillSlots.class);
+
         //Register Registries
         modEventBus.addListener(ProficiencyManager::createProficiencyRegistry);
         modEventBus.addListener(ProficiencyManager::registerProficiencies);
+        modEventBus.addListener(this::loadReloadEnums);
 
-
-        modEventBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.addListener(this::regTestCommands);
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    private void loadReloadEnums(final FMLCommonSetupEvent event)
+    {
+        LivingMotion.ENUM_MANAGER.loadEnum();
+        SkillCategory.ENUM_MANAGER.loadEnum();
+        SkillSlot.ENUM_MANAGER.loadEnum();
+        Style.ENUM_MANAGER.loadEnum();
+        WeaponCategory.ENUM_MANAGER.loadEnum();
+        BattleStyleCategory.ENUM_MANAGER.loadEnum();
     }
 
     private void regTestCommands(final RegisterCommandsEvent event)
@@ -48,9 +62,6 @@ public class BattleArtsAPI
         ProficiencyCommand.register(event.getDispatcher());
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
-
-    }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {

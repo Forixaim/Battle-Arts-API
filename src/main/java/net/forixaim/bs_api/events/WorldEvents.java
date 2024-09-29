@@ -21,25 +21,12 @@ import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
 @Mod.EventBusSubscriber(modid = BattleArtsAPI.MOD_ID)
 public class WorldEvents
 {
-	public static void onPlayerJoin(EntityJoinLevelEvent event)
-	{
-		if (event.getEntity() instanceof Player player)
-		{
-			PlayerPatch<?> playerPatch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
-			SkillContainer battleStyleContainer = playerPatch.getSkillCapability().skillContainers[BattleArtsSkillSlots.BATTLE_STYLE.universalOrdinal()];
-			if (battleStyleContainer.isEmpty())
-			{
-				battleStyleContainer.setSkill(BattleStyleRegistry.TRAVELER);
-				NetworkHelpers.clientSendSkill(battleStyleContainer.getSlot(), BattleStyleRegistry.TRAVELER);
-			}
-		}
-	}
-
 	@SubscribeEvent
 	public static void PlayerKill(LivingDeathEvent event)
 	{

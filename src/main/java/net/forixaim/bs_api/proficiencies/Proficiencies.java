@@ -2,11 +2,15 @@ package net.forixaim.bs_api.proficiencies;
 
 import net.forixaim.bs_api.BattleArtsAPI;
 import net.forixaim.bs_api.events.ProficiencyRegistryEvent;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.PlayerRideableJumping;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
+import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
+
+import java.util.Objects;
 
 @Mod.EventBusSubscriber(modid = BattleArtsAPI.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Proficiencies
@@ -77,5 +81,10 @@ public class Proficiencies
 		FLYING = registryWorker.build("flying", SpecialPredicateProficiency::new, SpecialPredicateProficiency.createSpecialPredicateProficiencyBuilder().setPredicate(
 				playerPatch -> playerPatch.getOriginal().isFallFlying()
 		));
+
+		WEIGHT = registryWorker.build("weight", SpecialPredicateProficiency::new, SpecialPredicateProficiency.createSpecialPredicateProficiencyBuilder()
+				.setPredicate(
+						(playerPatch) -> Objects.requireNonNull(playerPatch.getOriginal().getAttribute(EpicFightAttributes.WEIGHT.get())).getValue() > 50.0
+				));
 	}
 }

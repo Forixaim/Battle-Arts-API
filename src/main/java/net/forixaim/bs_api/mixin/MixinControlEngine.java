@@ -5,9 +5,11 @@ import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.bs_api.battle_arts_skills.aerials.MidAirAttack;
 import net.forixaim.bs_api.client.KeyBinds;
 import net.forixaim.bs_api.client.ui.BattleStyleScreen;
+import net.forixaim.bs_api.client.ui.ProficiencyScreen;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.HitResult;
@@ -100,9 +102,9 @@ public abstract class MixinControlEngine
 			}
 		}
 
-		if (KeyBinds.SHOW_BATTLE_STYLE_MENU.consumeClick())
+		if (KeyBinds.SHOW_PROFICIENCY_MENU.consumeClick())
 		{
-			Minecraft.getInstance().setScreen(new BattleStyleScreen(this.player, this.playerpatch.getSkillCapability()));
+			Minecraft.getInstance().setScreen(new ProficiencyScreen(this.player));
 		}
 
 		if (EpicFightKeyMappings.CONFIG.consumeClick())

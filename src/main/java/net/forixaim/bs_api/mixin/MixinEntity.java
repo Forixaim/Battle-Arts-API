@@ -1,5 +1,6 @@
 package net.forixaim.bs_api.mixin;
 
+
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.bs_api.battle_arts_skills.battle_style.BattleStyle;
 import net.minecraft.resources.ResourceKey;
@@ -8,9 +9,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,11 +19,10 @@ import yesman.epicfight.world.capabilities.entitypatch.EntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 @Mixin(Entity.class)
-public abstract class InvulnerabilityMixin
+public class MixinEntity
 {
-	@Shadow public abstract void playerTouch(Player pPlayer);
-
-	@Unique private Entity battle_arts$entity = (Entity) (Object)this;
+	@Unique
+	private final Entity battle_arts$entity = (Entity) (Object)this;
 
 	@Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
 	private void isInvulnerableTo(DamageSource pSource, CallbackInfoReturnable<Boolean> cir)
@@ -36,27 +34,20 @@ public abstract class InvulnerabilityMixin
 			{
 				if (!playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
 				{
-					if (!battleStyle.getImmuneDamages().isEmpty())
+					for (ResourceKey<DamageType> damageType : battleStyle.getImmuneDamages())
 					{
-						for (ResourceKey<DamageType> damageType : battleStyle.getImmuneDamages())
+						if (pSource.is(damageType))
 						{
-							if (pSource.is(damageType))
-							{
-								cir.setReturnValue(true);
-							}
+							cir.setReturnValue(true);
 						}
 					}
-					if (!battleStyle.getImmuneModdedDamages().isEmpty())
+					for (TagKey<DamageType> damageType : battleStyle.getImmuneModdedDamages())
 					{
-						for (TagKey<DamageType> damageType : battleStyle.getImmuneModdedDamages())
+						if (pSource.is(damageType))
 						{
-							if (pSource.is(damageType))
-							{
-								cir.setReturnValue(true);
-							}
+							cir.setReturnValue(true);
 						}
 					}
-
 				}
 			}
 		}

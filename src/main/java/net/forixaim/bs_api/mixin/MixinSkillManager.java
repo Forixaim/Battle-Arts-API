@@ -25,7 +25,7 @@ public abstract class MixinSkillManager
 		{
 			if (!localPlayerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && localPlayerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
 			{
-				if (battleStyle.getAssociatedBasicAttack() != null)
+				if (battleStyle.canModifyAttacks())
 				{
 					localPlayerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).sendExecuteRequest(localPlayerPatch, ClientEngine.getInstance().controllEngine);
 				}
