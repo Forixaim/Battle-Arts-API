@@ -10,10 +10,10 @@ public enum BattleArtsSkillCategories implements SkillCategory
 	BURST_ART(true, true, true),
 	ULTIMATE_ART(true, true, true);
 
-	boolean Save;
-	boolean Sync;
-	boolean Modifiable;
-	int ID;
+	final boolean Save;
+	final boolean Sync;
+	final boolean Modifiable;
+	final int ID;
 
 	BattleArtsSkillCategories(boolean ShouldSave, boolean ShouldSync, boolean Modifiable)
 	{

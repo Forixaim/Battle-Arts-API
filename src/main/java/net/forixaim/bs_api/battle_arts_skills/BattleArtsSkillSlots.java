@@ -10,8 +10,8 @@ public enum BattleArtsSkillSlots implements SkillSlot
 	TAUNT(BattleArtsSkillCategories.TAUNT),
 	BURST_ART(BattleArtsSkillCategories.BURST_ART),
 	ULTIMATE_ART(BattleArtsSkillCategories.ULTIMATE_ART);
-	SkillCategory category;
-	int id;
+	final SkillCategory category;
+	final int id;
 
 	BattleArtsSkillSlots(SkillCategory BattleStyle)
 	{

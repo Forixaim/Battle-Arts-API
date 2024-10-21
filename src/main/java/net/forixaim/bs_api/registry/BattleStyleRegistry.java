@@ -19,6 +19,6 @@ public class BattleStyleRegistry
 	{
 		SkillBuildEvent.ModRegistryWorker registryWorker = event.createRegistryWorker(BattleArtsAPI.MOD_ID);
 
-		TRAVELER = registryWorker.build("traveler", Traveler::new, BattleStyle.createBattleStyleBuilder().setBattleStyleCategory(BattleStyleCategories.STARTING));
+		TRAVELER = registryWorker.build("traveler", Traveler::new, BattleStyle.createBattleStyleBuilder().setBattleStyleCategory(BattleStyleCategories.STARTING).setResource(Skill.Resource.NONE));
 	}
 }
