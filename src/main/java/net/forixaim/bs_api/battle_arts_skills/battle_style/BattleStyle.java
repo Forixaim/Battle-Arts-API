@@ -56,6 +56,10 @@ public abstract class BattleStyle extends Skill
 	protected List<Proficiency> proficiencySpecialization;
 	protected BattleStyleCategory category;
 
+	protected List<AnimationProvider<?>> unarmedAttackAnimations;
+	protected Map<LivingMotion, AnimationProvider<?>> unarmedLivingMotions;
+
+
 	private final Map<Attribute, AttributeModifier> BattleStyleStatModifier;
 	protected Map<LivingMotion, StaticAnimation> livingMotionModifiers;
 	protected List<Pair<WeaponCategory, AnimationProvider<StaticAnimation>>> weaponDrawAnimations;
@@ -64,6 +68,8 @@ public abstract class BattleStyle extends Skill
 	public BattleStyle(Builder<?> builder)
 	{
 		super (builder);
+		this.unarmedAttackAnimations = Lists.newArrayList();
+		this.unarmedLivingMotions = Maps.newHashMap();
 		this.BattleStyleStatModifier = Maps.newHashMap();
 		this.livingMotionModifiers = Maps.newHashMap();
 		this.immuneDamages = Lists.newArrayList();
@@ -84,6 +90,26 @@ public abstract class BattleStyle extends Skill
 			}
 		}
 		return false;
+	}
+
+	public boolean modifiesUnarmedAttacks()
+	{
+		return this.unarmedAttackAnimations != null && !this.unarmedAttackAnimations.isEmpty();
+	}
+
+	public boolean modifiesUnarmedLMs()
+	{
+		return this.unarmedAttackAnimations != null && !this.unarmedAttackAnimations.isEmpty();
+	}
+
+	public List<AnimationProvider<?>> getUnarmedAttackAnimations()
+	{
+		return unarmedAttackAnimations;
+	}
+
+	public Map<LivingMotion, AnimationProvider<?>> getUnarmedLivingMotions()
+	{
+		return unarmedLivingMotions;
 	}
 
 	public int getProficiencyBonus()

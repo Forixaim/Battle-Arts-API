@@ -1,17 +1,18 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "net.forixaim.bs_api.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "refmap": "battlearts_api.refmap.json",
-  "mixins": [
-    "MixinEntity"
-  ],
-  "client": [
-    "MixinControlEngine",
-    "MixinSkillManager"
-  ],
-  "injectors": {
-    "defaultRequire": 0
-  }
+	"required": true,
+	"minVersion": "0.8",
+	"package": "net.forixaim.bs_api.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"refmap": "battlearts_api.refmap.json",
+	"mixins": [
+		"MixinCapabilityItem",
+		"MixinEntity"
+	],
+	"client": [
+		"MixinControlEngine",
+		"MixinSkillManager"
+	],
+	"injectors": {
+		"defaultRequire": 0
+	}
 }
