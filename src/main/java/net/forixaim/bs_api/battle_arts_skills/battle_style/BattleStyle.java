@@ -45,7 +45,7 @@ public abstract class BattleStyle extends Skill
 {
 	public static Builder<BattleStyle> CreateBattleStyle()
 	{
-		return (new Builder<BattleStyle>().setCategory(BattleArtsSkillCategories.BATTLE_STYLE).setResource(Resource.NONE));
+		return (new Builder<>().setCategory(BattleArtsSkillCategories.BATTLE_STYLE).setResource(Resource.NONE));
 	}
 
 	protected int proficiencyXpPerKill = 0;
@@ -58,6 +58,7 @@ public abstract class BattleStyle extends Skill
 
 	protected List<AnimationProvider<?>> unarmedAttackAnimations;
 	protected Map<LivingMotion, AnimationProvider<?>> unarmedLivingMotions;
+	protected Map<LivingMotion, AnimationProvider<?>> unarmedBattleMotions;
 
 
 	private final Map<Attribute, AttributeModifier> BattleStyleStatModifier;
@@ -99,7 +100,17 @@ public abstract class BattleStyle extends Skill
 
 	public boolean modifiesUnarmedLMs()
 	{
-		return this.unarmedAttackAnimations != null && !this.unarmedAttackAnimations.isEmpty();
+		return this.unarmedLivingMotions != null && !this.unarmedLivingMotions.isEmpty();
+	}
+
+	public boolean modifiesUnarmedBMs()
+	{
+		return this.unarmedBattleMotions != null && !this.unarmedBattleMotions.isEmpty();
+	}
+
+	public Map<LivingMotion, AnimationProvider<?>> getUnarmedBattleMotions()
+	{
+		return unarmedBattleMotions;
 	}
 
 	public List<AnimationProvider<?>> getUnarmedAttackAnimations()

@@ -1,7 +1,6 @@
 package net.forixaim.bs_api.proficiencies;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -19,20 +18,14 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.registries.*;
 import org.jetbrains.annotations.NotNull;
-import yesman.epicfight.api.data.reloader.SkillManager;
-import yesman.epicfight.main.EpicFightMod;
-import yesman.epicfight.skill.Skill;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ProficiencyManager extends SimpleJsonResourceReloadListener
 {
-	private static final SkillManager INSTANCE = new SkillManager();
 	public static final ResourceKey<Registry<Proficiency>> PROFICIENCY_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(BattleArtsAPI.MOD_ID, "proficiency"));
 	public static final List<Proficiency> REGISTERED_PROFICIENCIES = Lists.newArrayList();
-	private static Set<String> nameSpaces;
 	private static final Gson GSON = new GsonBuilder().create();
 
 	public ProficiencyManager(Gson pGson, String pDirectory)
@@ -62,7 +55,6 @@ public class ProficiencyManager extends SimpleJsonResourceReloadListener
 		{
 			final ProficiencyRegistryEvent proficiencyRegistryEvent = new ProficiencyRegistryEvent();
 			ModLoader.get().postEvent(proficiencyRegistryEvent);
-			nameSpaces = ImmutableSet.copyOf(proficiencyRegistryEvent.getNamespaces());
 
 			event.register(PROFICIENCY_REGISTRY_KEY, registerHelper ->
 			{

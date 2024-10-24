@@ -28,6 +28,8 @@ public abstract class MixinCapabilityItem
 			{
 				if (battleStyle.modifiesUnarmedLMs())
 					cir.setReturnValue(battleStyle.getUnarmedLivingMotions());
+				if (battleStyle.modifiesUnarmedBMs() && playerPatch.isBattleMode())
+					cir.setReturnValue(battleStyle.getUnarmedBattleMotions());
 			}
 		}
 	}
