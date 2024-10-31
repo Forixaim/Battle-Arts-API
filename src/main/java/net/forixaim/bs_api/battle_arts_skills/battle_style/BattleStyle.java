@@ -59,6 +59,8 @@ public abstract class BattleStyle extends Skill
 	protected List<AnimationProvider<?>> unarmedAttackAnimations;
 	protected Map<LivingMotion, AnimationProvider<?>> unarmedLivingMotions;
 	protected Map<LivingMotion, AnimationProvider<?>> unarmedBattleMotions;
+	protected Skill unarmedInnateSkill;
+	protected Skill unarmedPassiveSkill;
 
 
 	private final Map<Attribute, AttributeModifier> BattleStyleStatModifier;
@@ -78,7 +80,19 @@ public abstract class BattleStyle extends Skill
 		this.requiredProficiencies = Lists.newArrayList();
 		this.proficiencySpecialization = Lists.newArrayList();
 		this.weaponDrawAnimations = Lists.newArrayList();
+		this.unarmedInnateSkill = null;
+		this.unarmedPassiveSkill = null;
 		this.category = builder.battleStyleCategory;
+	}
+
+	public Skill getUnarmedInnateSkill()
+	{
+		return unarmedInnateSkill;
+	}
+
+	public Skill getUnarmedPassiveSkill()
+	{
+		return unarmedPassiveSkill;
 	}
 
 	public boolean checkProficiency(Proficiency proficiency)
