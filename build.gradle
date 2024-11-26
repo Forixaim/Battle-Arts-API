@@ -96,7 +96,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("curse.maven:epic-fight-mod-405076:5618905")
+    implementation fg.deobf("curse.maven:epic-fight-mod-405076:5856683")
 
     implementation fg.deobf("curse.maven:weapons-of-miracles-epicfight-918614:5647351")
     compileOnly fg.deobf("curse.maven:epic-fight-fighting-styles-1030071:5526412")

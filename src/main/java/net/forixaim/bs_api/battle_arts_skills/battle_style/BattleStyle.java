@@ -205,7 +205,7 @@ public abstract class BattleStyle extends Skill
 	{
 		if (container.getExecuter() instanceof ServerPlayerPatch spp)
 		{
-			spp.modifyLivingMotionByCurrentItem();
+			spp.modifyLivingMotionByCurrentItem(false);
 		}
 		for (Map.Entry<Attribute, AttributeModifier> stat : this.BattleStyleStatModifier.entrySet()) {
 			AttributeInstance attr = container.getExecuter().getOriginal().getAttribute(stat.getKey());
@@ -222,7 +222,7 @@ public abstract class BattleStyle extends Skill
 	{
 		if (container.getExecuter() instanceof ServerPlayerPatch spp)
 		{
-			spp.modifyLivingMotionByCurrentItem();
+			spp.modifyLivingMotionByCurrentItem(false);
 		}
 		for (Map.Entry<Attribute, AttributeModifier> stat : this.BattleStyleStatModifier.entrySet()) {
 			AttributeInstance attr = container.getExecuter().getOriginal().getAttribute(stat.getKey());

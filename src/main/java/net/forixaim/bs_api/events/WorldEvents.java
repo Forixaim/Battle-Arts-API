@@ -1,6 +1,7 @@
 package net.forixaim.bs_api.events;
 
 import com.mna.api.events.SpellCastEvent;
+import com.mna.api.spells.collections.Shapes;
 import net.forixaim.bs_api.BattleArtsAPI;
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.bs_api.battle_arts_skills.battle_style.BattleStyle;
@@ -31,9 +32,7 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
 @Mod.EventBusSubscriber(modid = BattleArtsAPI.MOD_ID)
 public class WorldEvents
 {
-	public static void onCast(SpellCastEvent event)
-	{
-	}
+
 
 	@SubscribeEvent
 	public static void PlayerKill(LivingDeathEvent event)
