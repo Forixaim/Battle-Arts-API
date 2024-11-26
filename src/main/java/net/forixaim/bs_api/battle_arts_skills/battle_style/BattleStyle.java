@@ -31,6 +31,7 @@ import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
@@ -64,8 +65,7 @@ public abstract class BattleStyle extends Skill
 
 
 	private final Map<Attribute, AttributeModifier> BattleStyleStatModifier;
-	protected Map<LivingMotion, StaticAnimation> livingMotionModifiers;
-	protected List<Pair<WeaponCategory, AnimationProvider<StaticAnimation>>> weaponDrawAnimations;
+	protected List<Pair<WeaponCategory, AnimationProvider<?>>> weaponDrawAnimations;
 	protected boolean modifiesAttacks;
 
 	public BattleStyle(Builder<?> builder)
@@ -73,8 +73,8 @@ public abstract class BattleStyle extends Skill
 		super (builder);
 		this.unarmedAttackAnimations = Lists.newArrayList();
 		this.unarmedLivingMotions = Maps.newHashMap();
+		this.unarmedBattleMotions = Maps.newHashMap();
 		this.BattleStyleStatModifier = Maps.newHashMap();
-		this.livingMotionModifiers = Maps.newHashMap();
 		this.immuneDamages = Lists.newArrayList();
 		this.immuneModdedDamages = Lists.newArrayList();
 		this.requiredProficiencies = Lists.newArrayList();
@@ -161,19 +161,19 @@ public abstract class BattleStyle extends Skill
 		return modifiesAttacks;
 	}
 
-	public List<Pair<WeaponCategory, AnimationProvider<StaticAnimation>>> getWeaponDrawAnimations()
+	public List<Pair<WeaponCategory, AnimationProvider<?>>> getWeaponDrawAnimations()
 	{
 		return weaponDrawAnimations;
 	}
 
-	public Map<LivingMotion, StaticAnimation> getLivingMotionModifiers(LivingEntityPatch<?> entityPatch)
+	public Map<LivingMotion, AnimationProvider<?>> getLivingMotionModifiers(LivingEntityPatch<?> entityPatch)
 	{
-		if (this.livingMotionModifiers == null)
+		if (this.unarmedLivingMotions == null)
 		{
 			return Maps.newHashMap();
 		}
 
-		return this.livingMotionModifiers;
+		return this.unarmedLivingMotions;
 	}
 
 	@Override
@@ -181,9 +181,6 @@ public abstract class BattleStyle extends Skill
 		super.setParams(parameters);
 
 		this.BattleStyleStatModifier.clear();
-
-
-
 		if (parameters.contains("attribute_modifiers")) {
 			ListTag attributeList = parameters.getList("attribute_modifiers", 10);
 
@@ -196,10 +193,20 @@ public abstract class BattleStyle extends Skill
 				this.BattleStyleStatModifier.put(attr, modifier);
 			}
 		}
+
+		if (parameters.contains("unarmed_living_motions"))
+		{
+
+		}
 	}
 
 	@Override
-	public void onInitiate(SkillContainer container) {
+	public void onInitiate(SkillContainer container)
+	{
+		if (container.getExecuter() instanceof ServerPlayerPatch spp)
+		{
+			spp.modifyLivingMotionByCurrentItem();
+		}
 		for (Map.Entry<Attribute, AttributeModifier> stat : this.BattleStyleStatModifier.entrySet()) {
 			AttributeInstance attr = container.getExecuter().getOriginal().getAttribute(stat.getKey());
 
@@ -211,7 +218,12 @@ public abstract class BattleStyle extends Skill
 	}
 
 	@Override
-	public void onRemoved(SkillContainer container) {
+	public void onRemoved(SkillContainer container)
+	{
+		if (container.getExecuter() instanceof ServerPlayerPatch spp)
+		{
+			spp.modifyLivingMotionByCurrentItem();
+		}
 		for (Map.Entry<Attribute, AttributeModifier> stat : this.BattleStyleStatModifier.entrySet()) {
 			AttributeInstance attr = container.getExecuter().getOriginal().getAttribute(stat.getKey());
 

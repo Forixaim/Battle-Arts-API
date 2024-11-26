@@ -87,6 +87,8 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    maven { url 'https://maven.theillusivec4.top/' }
+    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
     flatDir {
          dir 'libs'
     }
@@ -95,6 +97,18 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     implementation fg.deobf("curse.maven:epic-fight-mod-405076:5618905")
+
+    implementation fg.deobf("curse.maven:weapons-of-miracles-epicfight-918614:5647351")
+    compileOnly fg.deobf("curse.maven:epic-fight-fighting-styles-1030071:5526412")
+
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+    runtimeOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:${caelus_version}")
+    compileOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:${caelus_version}")
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.2')
+
+    implementation fg.deobf("curse.maven:mna-406360:${mna_version}")
+
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 

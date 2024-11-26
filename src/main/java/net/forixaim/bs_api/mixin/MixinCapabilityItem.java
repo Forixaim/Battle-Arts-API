@@ -19,6 +19,7 @@ import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 
 import java.util.List;
@@ -57,15 +58,26 @@ public abstract class MixinCapabilityItem
 		String skillName = "";
 		SPChangeSkill.State state = SPChangeSkill.State.ENABLE;
 		SkillContainer weaponInnateSkillContainer = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
-		if (weaponInnateSkill != null) {
-			if (weaponInnateSkillContainer.getSkill() != weaponInnateSkill) {
+		if (weaponInnateSkill != null)
+		{
+			if (weaponInnateSkillContainer.getSkill() != weaponInnateSkill)
+			{
 				weaponInnateSkillContainer.setSkill(weaponInnateSkill);
 			}
 
 			skillName = weaponInnateSkill.toString();
-		} else {
+		}
+		else
+		{
 			state = SPChangeSkill.State.DISABLE;
 		}
+
+
+		if (playerPatch instanceof ServerPlayerPatch serverPlayerPatch)
+		{
+			serverPlayerPatch.modifyLivingMotionByCurrentItem();
+		}
+
 
 		weaponInnateSkillContainer.setDisabled(weaponInnateSkill == null);
 		EpicFightNetworkManager.sendToPlayer(new SPChangeSkill(SkillSlots.WEAPON_INNATE, skillName, state), (ServerPlayer)playerPatch.getOriginal());

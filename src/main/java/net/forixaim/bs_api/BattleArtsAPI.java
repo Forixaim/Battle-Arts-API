@@ -7,6 +7,7 @@ import net.forixaim.bs_api.battle_arts_skills.battle_style.BattleStyleCategories
 import net.forixaim.bs_api.battle_arts_skills.battle_style.BattleStyleCategory;
 import net.forixaim.bs_api.cmd.ProficiencyCommand;
 import net.forixaim.bs_api.proficiencies.ProficiencyManager;
+import net.forixaim.bs_api.tests.DummyAnimations;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -39,6 +40,7 @@ public class BattleArtsAPI
         //Register Registries
         modEventBus.addListener(ProficiencyManager::createProficiencyRegistry);
         modEventBus.addListener(ProficiencyManager::registerProficiencies);
+        modEventBus.addListener(DummyAnimations::register);
         modEventBus.addListener(this::loadReloadEnums);
 
         MinecraftForge.EVENT_BUS.addListener(this::regTestCommands);
