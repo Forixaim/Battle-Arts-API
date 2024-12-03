@@ -19,7 +19,7 @@ import yesman.epicfight.world.capabilities.entitypatch.EntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 @Mixin(Entity.class)
-public class MixinEntity
+public abstract class MixinEntity
 {
 	@Unique
 	private final Entity battle_arts$entity = (Entity) (Object)this;

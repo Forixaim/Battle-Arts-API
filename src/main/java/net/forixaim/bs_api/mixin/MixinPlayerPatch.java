@@ -12,7 +12,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
 @Mixin(value = PlayerPatch.class, remap = false)
-public class MixinPlayerPatch
+public abstract class MixinPlayerPatch
 {
 	@Unique
 	private PlayerPatch<?> battleArtsAPI$inst = (PlayerPatch<?>) (Object) this;
@@ -25,9 +25,9 @@ public class MixinPlayerPatch
 			if (!battleArtsAPI$inst.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && battleArtsAPI$inst.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
 			{
 				if (!battleStyle.getUnarmedBattleMotions().isEmpty() && battleArtsAPI$inst.isBattleMode())
-					serverPlayerPatch.modifyLivingMotionByCurrentItem();
+					serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
 				else if (!battleStyle.getUnarmedLivingMotions().isEmpty() && !battleArtsAPI$inst.isBattleMode())
-					serverPlayerPatch.modifyLivingMotionByCurrentItem();
+					serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
 
 				//adding the battle mode transition animations will be done in ExCap
 			}

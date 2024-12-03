@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillCategories;
+import net.forixaim.bs_api.battle_arts_skills.passive.BattleStyleDependentPassive;
 import net.forixaim.bs_api.proficiencies.Proficiency;
 import net.forixaim.bs_api.proficiencies.ProficiencyRank;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,10 +28,14 @@ import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.ParseUtil;
 import yesman.epicfight.client.gui.BattleModeGui;
+import yesman.epicfight.network.EpicFightNetworkManager;
+import yesman.epicfight.network.server.SPChangeSkill;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.skill.passive.SwordmasterSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
@@ -50,8 +55,9 @@ public abstract class BattleStyle extends Skill
 	}
 
 	protected int proficiencyXpPerKill = 0;
+	protected float jumpBoostPower = 0.0F;
 
-	protected List<Pair<Proficiency, ProficiencyRank>> requiredProficiencies;
+	protected Map<Proficiency, ProficiencyRank> requiredProficiencies;
 	protected List<ResourceKey<DamageType>> immuneDamages;
 	protected List<TagKey<DamageType>> immuneModdedDamages;
 	protected List<Proficiency> proficiencySpecialization;
@@ -62,10 +68,11 @@ public abstract class BattleStyle extends Skill
 	protected Map<LivingMotion, AnimationProvider<?>> unarmedBattleMotions;
 	protected Skill unarmedInnateSkill;
 	protected Skill unarmedPassiveSkill;
+	protected final List<Skill> dependentSkills;
 
 
 	private final Map<Attribute, AttributeModifier> BattleStyleStatModifier;
-	protected List<Pair<WeaponCategory, AnimationProvider<?>>> weaponDrawAnimations;
+	protected Map<WeaponCategory, AnimationProvider<?>> weaponDrawAnimations;
 	protected boolean modifiesAttacks;
 
 	public BattleStyle(Builder<?> builder)
@@ -77,9 +84,10 @@ public abstract class BattleStyle extends Skill
 		this.BattleStyleStatModifier = Maps.newHashMap();
 		this.immuneDamages = Lists.newArrayList();
 		this.immuneModdedDamages = Lists.newArrayList();
-		this.requiredProficiencies = Lists.newArrayList();
+		this.requiredProficiencies = Maps.newHashMap();
 		this.proficiencySpecialization = Lists.newArrayList();
-		this.weaponDrawAnimations = Lists.newArrayList();
+		this.weaponDrawAnimations = Maps.newHashMap();
+		this.dependentSkills = Lists.newArrayList();
 		this.unarmedInnateSkill = null;
 		this.unarmedPassiveSkill = null;
 		this.category = builder.battleStyleCategory;
@@ -161,7 +169,7 @@ public abstract class BattleStyle extends Skill
 		return modifiesAttacks;
 	}
 
-	public List<Pair<WeaponCategory, AnimationProvider<?>>> getWeaponDrawAnimations()
+	public Map<WeaponCategory, AnimationProvider<?>> getWeaponDrawAnimations()
 	{
 		return weaponDrawAnimations;
 	}
@@ -193,11 +201,7 @@ public abstract class BattleStyle extends Skill
 				this.BattleStyleStatModifier.put(attr, modifier);
 			}
 		}
-
-		if (parameters.contains("unarmed_living_motions"))
-		{
-
-		}
+		jumpBoostPower = parameters.getFloat("jump_boost_power");
 	}
 
 	@Override
@@ -217,13 +221,30 @@ public abstract class BattleStyle extends Skill
 		}
 	}
 
+	private void removeBattleStyleDependentSkills(ServerPlayerPatch playerPatch)
+	{
+		for (SkillContainer skillContainer : playerPatch.getSkillCapability().skillContainers)
+		{
+			if (skillContainer.getSkill() instanceof BattleStyleDependentPassive bsd)
+			{
+				if (bsd.isApplicable(this))
+				{
+					skillContainer.setSkill(null);
+					EpicFightNetworkManager.sendToPlayer(new SPChangeSkill(skillContainer.getSlot(), "", SPChangeSkill.State.DISABLE), playerPatch.getOriginal());
+				}
+			}
+		}
+	}
+
 	@Override
 	public void onRemoved(SkillContainer container)
 	{
 		if (container.getExecuter() instanceof ServerPlayerPatch spp)
 		{
 			spp.modifyLivingMotionByCurrentItem(false);
+			removeBattleStyleDependentSkills(spp);
 		}
+
 		for (Map.Entry<Attribute, AttributeModifier> stat : this.BattleStyleStatModifier.entrySet()) {
 			AttributeInstance attr = container.getExecuter().getOriginal().getAttribute(stat.getKey());
 
