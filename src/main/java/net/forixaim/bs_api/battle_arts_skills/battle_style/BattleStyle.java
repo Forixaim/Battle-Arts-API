@@ -193,11 +193,6 @@ public abstract class BattleStyle extends Skill
 				this.BattleStyleStatModifier.put(attr, modifier);
 			}
 		}
-
-		if (parameters.contains("unarmed_living_motions"))
-		{
-
-		}
 	}
 
 	@Override
