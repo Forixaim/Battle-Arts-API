@@ -75,7 +75,7 @@ public abstract class MixinCapabilityItem
 
 		if (playerPatch instanceof ServerPlayerPatch serverPlayerPatch)
 		{
-			serverPlayerPatch.modifyLivingMotionByCurrentItem();
+			serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
 		}
 
 
