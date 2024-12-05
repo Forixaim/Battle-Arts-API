@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import net.forixaim.bs_api.Config;
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillCategories;
 import net.forixaim.bs_api.battle_arts_skills.passive.BattleStyleDependentPassive;
 import net.forixaim.bs_api.proficiencies.Proficiency;
@@ -14,6 +15,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -39,16 +41,20 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
+import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * This class extends the skill class and is mainly there as a framework for the Battle Styles which can modify certain things.
  */
 public abstract class BattleStyle extends Skill
 {
+	private static final UUID UNIVERSAL_BATTLE_STYLE_UUID = UUID.fromString("705bfb84-a7c1-4726-bc7b-36cbabb84843");
+
 	public static Builder<BattleStyle> CreateBattleStyle()
 	{
 		return (new Builder<>().setCategory(BattleArtsSkillCategories.BATTLE_STYLE).setResource(Resource.NONE));
@@ -56,6 +62,10 @@ public abstract class BattleStyle extends Skill
 
 	protected int proficiencyXpPerKill = 0;
 	protected float jumpBoostPower = 0.0F;
+
+	//From 0.0 to 1.0
+	protected float criticalHitChance = 0.06F;
+	protected float criticalHitDamage = 0.5F;
 
 	protected Map<Proficiency, ProficiencyRank> requiredProficiencies;
 	protected List<ResourceKey<DamageType>> immuneDamages;
@@ -219,6 +229,16 @@ public abstract class BattleStyle extends Skill
 				attr.addTransientModifier(stat.getValue());
 			}
 		}
+		container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_HURT, UNIVERSAL_BATTLE_STYLE_UUID, event ->
+		{
+			//Generate a number between 0 inclusive and 1 inclusive
+			float random = container.getExecuter().getOriginal().getRandom().nextFloat();
+			if (random <= this.criticalHitChance && Config.randomCriticalHits)
+			{
+				event.setAttackDamage(event.getAttackDamage() *  1 + this.criticalHitDamage);
+				event.getTarget().playSound(SoundEvents.PLAYER_ATTACK_CRIT, 1.0F, 1.0F);
+			}
+		});
 	}
 
 	private void removeBattleStyleDependentSkills(ServerPlayerPatch playerPatch)

@@ -1,32 +1,20 @@
 package net.forixaim.bs_api.events;
 
-import com.mna.api.events.SpellCastEvent;
-import com.mna.api.spells.collections.Shapes;
 import net.forixaim.bs_api.BattleArtsAPI;
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.bs_api.battle_arts_skills.battle_style.BattleStyle;
 import net.forixaim.bs_api.capabilities.ProficiencyCapabilityProvider;
-import net.forixaim.bs_api.network.NetworkHelpers;
 import net.forixaim.bs_api.proficiencies.SpecialPredicateProficiency;
 import net.forixaim.bs_api.proficiencies.WeaponProficiency;
-import net.forixaim.bs_api.registry.BattleStyleRegistry;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import yesman.epicfight.network.EpicFightNetworkManager;
-import yesman.epicfight.network.client.CPChangeSkill;
 import yesman.epicfight.skill.Skill;
-import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
-import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
 @Mod.EventBusSubscriber(modid = BattleArtsAPI.MOD_ID)

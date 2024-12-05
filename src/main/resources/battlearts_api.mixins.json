@@ -8,6 +8,7 @@
 		"MixinCapabilityItem",
 		"MixinEntity",
 		"MixinLivingEntity",
+		"MixinPlayerCritical",
 		"MixinPlayerPatch"
 	],
 	"client": [
