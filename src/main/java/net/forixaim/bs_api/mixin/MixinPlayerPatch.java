@@ -3,6 +3,7 @@ package net.forixaim.bs_api.mixin;
 
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.bs_api.battle_arts_skills.battle_style.BattleStyle;
+import net.minecraft.world.InteractionHand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
+import yesman.epicfight.world.capabilities.item.WeaponCapability;
 
 @Mixin(value = PlayerPatch.class, remap = false)
 public abstract class MixinPlayerPatch
@@ -24,11 +26,13 @@ public abstract class MixinPlayerPatch
 		{
 			if (!battleArtsAPI$inst.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && battleArtsAPI$inst.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
 			{
-				if (!battleStyle.getUnarmedBattleMotions().isEmpty() && battleArtsAPI$inst.isBattleMode())
-					serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
-				else if (!battleStyle.getUnarmedLivingMotions().isEmpty() && !battleArtsAPI$inst.isBattleMode())
-					serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
-
+				if (!(battleArtsAPI$inst.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
+				{
+					if (!battleStyle.getUnarmedBattleMotions().isEmpty() && battleArtsAPI$inst.isBattleMode())
+						serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
+					else if (!battleStyle.getUnarmedLivingMotions().isEmpty() && !battleArtsAPI$inst.isBattleMode())
+						serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
+				}
 				//adding the battle mode transition animations will be done in ExCap
 			}
 		}

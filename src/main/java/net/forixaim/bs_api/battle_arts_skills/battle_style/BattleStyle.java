@@ -17,13 +17,18 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import yesman.epicfight.api.animation.AnimationProvider;
 import yesman.epicfight.api.animation.LivingMotion;
@@ -40,6 +45,7 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.Style;
+import yesman.epicfight.world.capabilities.item.WeaponCapability;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
@@ -64,7 +70,7 @@ public abstract class BattleStyle extends Skill
 	protected float jumpBoostPower = 0.0F;
 
 	//From 0.0 to 1.0
-	protected float criticalHitChance = 0.06F;
+	protected float criticalHitChance = 0.5F;
 	protected float criticalHitDamage = 0.5F;
 
 	protected Map<Proficiency, ProficiencyRank> requiredProficiencies;
@@ -214,12 +220,23 @@ public abstract class BattleStyle extends Skill
 		jumpBoostPower = parameters.getFloat("jump_boost_power");
 	}
 
+	public float getJumpBoostPower()
+	{
+		return jumpBoostPower;
+	}
+
+	public float getCriticalHitDamage()
+	{
+		return criticalHitDamage;
+	}
+
 	@Override
 	public void onInitiate(SkillContainer container)
 	{
 		if (container.getExecuter() instanceof ServerPlayerPatch spp)
 		{
-			spp.modifyLivingMotionByCurrentItem(false);
+			if (!(spp.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
+				spp.modifyLivingMotionByCurrentItem(false);
 		}
 		for (Map.Entry<Attribute, AttributeModifier> stat : this.BattleStyleStatModifier.entrySet()) {
 			AttributeInstance attr = container.getExecuter().getOriginal().getAttribute(stat.getKey());
@@ -229,14 +246,15 @@ public abstract class BattleStyle extends Skill
 				attr.addTransientModifier(stat.getValue());
 			}
 		}
-		container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_HURT, UNIVERSAL_BATTLE_STYLE_UUID, event ->
+		container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_DAMAGE, UNIVERSAL_BATTLE_STYLE_UUID, event ->
 		{
 			//Generate a number between 0 inclusive and 1 inclusive
 			float random = container.getExecuter().getOriginal().getRandom().nextFloat();
-			if (random <= this.criticalHitChance && Config.randomCriticalHits)
+			CriticalHitEvent crit = ForgeHooks.getCriticalHit(event.getPlayerPatch().getOriginal(), event.getTarget(), true, random <= criticalHitChance ? 1 + getCriticalHitDamage() : 1.0f);
+			if (crit != null)
 			{
-				event.setAttackDamage(event.getAttackDamage() *  1 + this.criticalHitDamage);
-				event.getTarget().playSound(SoundEvents.PLAYER_ATTACK_CRIT, 1.0F, 1.0F);
+				event.setAttackDamage(event.getAttackDamage() * crit.getDamageModifier());
+				event.getPlayerPatch().playSound(SoundEvents.PLAYER_ATTACK_CRIT, 1.0F, 1.0F);
 			}
 		});
 	}

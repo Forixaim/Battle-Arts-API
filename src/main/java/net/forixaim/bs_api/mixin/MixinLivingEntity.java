@@ -40,7 +40,8 @@ public abstract class MixinLivingEntity
 			if (playerPatch != null && playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
 			{
 				float basePower =  this.hasEffect(MobEffects.JUMP) ? 0.1F * ((float) Objects.requireNonNull(this.getEffect(MobEffects.JUMP)).getAmplifier() + 1.0F) : 0.0F;
-
+				basePower += battleStyle.getJumpBoostPower();
+				info.setReturnValue(basePower);
 			}
 		}
 	}

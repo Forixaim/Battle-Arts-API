@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -21,6 +22,7 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
+import yesman.epicfight.world.capabilities.item.WeaponCapability;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,9 @@ import java.util.Map;
 @Mixin(value = CapabilityItem.class, remap = false)
 public abstract class MixinCapabilityItem
 {
+	@Unique
+	private final CapabilityItem battleArtsAPI$inst = (CapabilityItem) (Object) this;
+
 	@Inject(method = "getLivingMotionModifier", at = @At("RETURN"), remap = false, cancellable = true)
 	public void getLivingMotionModifier(LivingEntityPatch<?> entityPatch, InteractionHand hand, final CallbackInfoReturnable<Map<LivingMotion, AnimationProvider<?>>> cir)
 	{
@@ -75,7 +80,8 @@ public abstract class MixinCapabilityItem
 
 		if (playerPatch instanceof ServerPlayerPatch serverPlayerPatch)
 		{
-			serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
+			if (!(serverPlayerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
+				serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
 		}
 
 
