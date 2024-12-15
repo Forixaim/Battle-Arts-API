@@ -29,6 +29,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import yesman.epicfight.api.animation.AnimationProvider;
 import yesman.epicfight.api.animation.LivingMotion;
@@ -40,6 +41,7 @@ import yesman.epicfight.network.server.SPChangeSkill;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.skill.SkillDataKey;
 import yesman.epicfight.skill.passive.SwordmasterSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -64,6 +66,11 @@ public abstract class BattleStyle extends Skill
 	public static Builder<BattleStyle> CreateBattleStyle()
 	{
 		return (new Builder<>().setCategory(BattleArtsSkillCategories.BATTLE_STYLE).setResource(Resource.NONE));
+	}
+
+	public SkillDataKey<Boolean> getSneakIsDisabledKey()
+	{
+		return null;
 	}
 
 	protected int proficiencyXpPerKill = 0;
@@ -250,12 +257,13 @@ public abstract class BattleStyle extends Skill
 		{
 			//Generate a number between 0 inclusive and 1 inclusive
 			float random = container.getExecuter().getOriginal().getRandom().nextFloat();
-			CriticalHitEvent crit = ForgeHooks.getCriticalHit(event.getPlayerPatch().getOriginal(), event.getTarget(), true, random <= criticalHitChance ? 1 + getCriticalHitDamage() : 1.0f);
+			CriticalHitEvent crit = ForgeHooks.getCriticalHit(event.getPlayerPatch().getOriginal(), event.getTarget(), false, random <= criticalHitChance ? 1 + getCriticalHitDamage() : 1.0f);
 			if (crit != null)
 			{
 				event.setAttackDamage(event.getAttackDamage() * crit.getDamageModifier());
 				event.getPlayerPatch().playSound(SoundEvents.PLAYER_ATTACK_CRIT, 1.0F, 1.0F);
 			}
+
 		});
 	}
 

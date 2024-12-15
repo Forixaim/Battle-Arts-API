@@ -26,5 +26,10 @@
   "gui.bs_api.proficiency.view": "Proficiency Viewer",
 
   "skill.bs_api.traveler": "Traveler",
-  "skill.bs_api.traveler.tooltip": "Not meant to be used."
+  "skill.bs_api.traveler.tooltip": "Not meant to be used.",
+
+  "skill.epicfight.battle_style.category": "Battle Style",
+  "skill.epicfight.combat_art.category": "Combat Art",
+  "skill.epicfight.burst_art.category": "Burst Art",
+  "skill.epicfight.ultimate_art.category": "Ultimate Art"
 }

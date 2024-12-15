@@ -110,8 +110,8 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     //Runtime Dummy
-    runtimeOnly fg.deobf("curse.maven:selene-499980:5546852")
-    runtimeOnly fg.deobf("curse.maven:mmmmmmmmmmmm-225738:5319203")
+    implementation fg.deobf("curse.maven:selene-499980:5546852")
+    implementation fg.deobf("curse.maven:mmmmmmmmmmmm-225738:5319203")
 }
 
 tasks.named('processResources', ProcessResources).configure {
