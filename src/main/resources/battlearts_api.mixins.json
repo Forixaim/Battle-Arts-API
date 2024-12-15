@@ -9,12 +9,10 @@
 		"MixinEnchant",
 		"MixinEntity",
 		"MixinLivingEntity",
-		"MixinPlayerCritical",
-		"MixinPlayerPatch"
+		"MixinPlayerCritical"
 	],
 	"client": [
-		"MixinControlEngine",
-		"MixinSkillManager"
+		"MixinControlEngine"
 	],
 	"injectors": {
 		"defaultRequire": 0

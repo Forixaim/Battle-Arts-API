@@ -52,53 +52,57 @@ public abstract class MixinCapabilityItem
 	@Inject(method = "changeWeaponInnateSkill", at = @At("RETURN"), remap = false)
 	public void changeWeaponInnate(PlayerPatch<?> playerPatch, ItemStack itemstack, CallbackInfo ci)
 	{
-		Skill weaponInnateSkill = null;
-		Skill skill = null;
-		if (!playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
+		if (!(playerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
 		{
-			weaponInnateSkill = battleStyle.getUnarmedInnateSkill();
-			skill = battleStyle.getUnarmedPassiveSkill();
-		}
-
-		String skillName = "";
-		SPChangeSkill.State state = SPChangeSkill.State.ENABLE;
-		SkillContainer weaponInnateSkillContainer = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
-		if (weaponInnateSkill != null)
-		{
-			if (weaponInnateSkillContainer.getSkill() != weaponInnateSkill)
+			Skill weaponInnateSkill = null;
+			Skill skill = null;
+			if (!playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
 			{
-				weaponInnateSkillContainer.setSkill(weaponInnateSkill);
+				weaponInnateSkill = battleStyle.getUnarmedInnateSkill();
+				skill = battleStyle.getUnarmedPassiveSkill();
 			}
 
-			skillName = weaponInnateSkill.toString();
-		}
-		else
-		{
-			state = SPChangeSkill.State.DISABLE;
-		}
+			String skillName = "";
+			SPChangeSkill.State state = SPChangeSkill.State.ENABLE;
+			SkillContainer weaponInnateSkillContainer = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
+			if (weaponInnateSkill != null)
+			{
+				if (weaponInnateSkillContainer.getSkill() != weaponInnateSkill)
+				{
+					weaponInnateSkillContainer.setSkill(weaponInnateSkill);
+				}
 
-
-		if (playerPatch instanceof ServerPlayerPatch serverPlayerPatch)
-		{
-			if (!(serverPlayerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
-				serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
-		}
-
-
-		weaponInnateSkillContainer.setDisabled(weaponInnateSkill == null);
-		EpicFightNetworkManager.sendToPlayer(new SPChangeSkill(SkillSlots.WEAPON_INNATE, skillName, state), (ServerPlayer)playerPatch.getOriginal());
-
-
-		SkillContainer passiveSkillContainer = playerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-		if (skill != null) {
-			if (passiveSkillContainer.getSkill() != skill) {
-				passiveSkillContainer.setSkill(skill);
-				EpicFightNetworkManager.sendToPlayer(new SPChangeSkill(SkillSlots.WEAPON_PASSIVE, skill.toString(), SPChangeSkill.State.ENABLE), (ServerPlayer)playerPatch.getOriginal());
+				skillName = weaponInnateSkill.toString();
 			}
-		} else {
-			passiveSkillContainer.setSkill(null);
-			EpicFightNetworkManager.sendToPlayer(new SPChangeSkill(SkillSlots.WEAPON_PASSIVE, "empty", SPChangeSkill.State.ENABLE), (ServerPlayer)playerPatch.getOriginal());
+			else
+			{
+				state = SPChangeSkill.State.DISABLE;
+			}
+
+
+			if (playerPatch instanceof ServerPlayerPatch serverPlayerPatch)
+			{
+				if (!(serverPlayerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
+					serverPlayerPatch.modifyLivingMotionByCurrentItem(false);
+			}
+
+
+			weaponInnateSkillContainer.setDisabled(weaponInnateSkill == null);
+			EpicFightNetworkManager.sendToPlayer(new SPChangeSkill(SkillSlots.WEAPON_INNATE, skillName, state), (ServerPlayer)playerPatch.getOriginal());
+
+
+			SkillContainer passiveSkillContainer = playerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
+			if (skill != null) {
+				if (passiveSkillContainer.getSkill() != skill) {
+					passiveSkillContainer.setSkill(skill);
+					EpicFightNetworkManager.sendToPlayer(new SPChangeSkill(SkillSlots.WEAPON_PASSIVE, skill.toString(), SPChangeSkill.State.ENABLE), (ServerPlayer)playerPatch.getOriginal());
+				}
+			} else {
+				passiveSkillContainer.setSkill(null);
+				EpicFightNetworkManager.sendToPlayer(new SPChangeSkill(SkillSlots.WEAPON_PASSIVE, "empty", SPChangeSkill.State.ENABLE), (ServerPlayer)playerPatch.getOriginal());
+			}
 		}
+
 	}
 
 	@Inject(method = "getAutoAttckMotion", at = @At("HEAD"), remap = false, cancellable = true)

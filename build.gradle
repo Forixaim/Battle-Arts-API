@@ -96,8 +96,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("curse.maven:epic-fight-mod-405076:5856683")
-
+    implementation fg.deobf("curse.maven:epic-fight-mod-405076:5922122")
     implementation fg.deobf("curse.maven:weapons-of-miracles-epicfight-918614:5647351")
     compileOnly fg.deobf("curse.maven:epic-fight-fighting-styles-1030071:5526412")
 
@@ -107,6 +106,8 @@ dependencies {
     compileOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:${caelus_version}")
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.2')
 
+
+    runtimeOnly fg.deobf("curse.maven:wom-918614:5889471")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     //Runtime Dummy
