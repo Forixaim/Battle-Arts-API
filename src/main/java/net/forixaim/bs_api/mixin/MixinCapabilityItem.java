@@ -36,7 +36,7 @@ public abstract class MixinCapabilityItem
 	@Inject(method = "getLivingMotionModifier", at = @At("RETURN"), remap = false, cancellable = true)
 	public void getLivingMotionModifier(LivingEntityPatch<?> entityPatch, InteractionHand hand, final CallbackInfoReturnable<Map<LivingMotion, AnimationProvider<?>>> cir)
 	{
-		if (entityPatch instanceof PlayerPatch<?> playerPatch)
+		if (entityPatch instanceof PlayerPatch<?> playerPatch && !(playerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
 		{
 			if (!playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
 			{

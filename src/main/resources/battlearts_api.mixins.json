@@ -12,6 +12,7 @@
 		"MixinPlayerCritical"
 	],
 	"client": [
+		"MixinBattleModeGUI",
 		"MixinControlEngine"
 	],
 	"injectors": {

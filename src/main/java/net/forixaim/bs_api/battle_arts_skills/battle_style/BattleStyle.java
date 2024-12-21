@@ -3,8 +3,6 @@ package net.forixaim.bs_api.battle_arts_skills.battle_style;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.datafixers.util.Pair;
-import net.forixaim.bs_api.Config;
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillCategories;
 import net.forixaim.bs_api.battle_arts_skills.passive.BattleStyleDependentPassive;
 import net.forixaim.bs_api.proficiencies.Proficiency;
@@ -22,18 +20,14 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import yesman.epicfight.api.animation.AnimationProvider;
 import yesman.epicfight.api.animation.LivingMotion;
-import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.ParseUtil;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.network.EpicFightNetworkManager;
@@ -42,11 +36,8 @@ import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillDataKey;
-import yesman.epicfight.skill.passive.SwordmasterSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
-import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
-import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
@@ -73,6 +64,24 @@ public abstract class BattleStyle extends Skill
 		return null;
 	}
 
+	/**
+	 * This array sets the innate skill color of a battle style.
+	 * It must be of size 3 with a float value between 0 and 1
+	 * [0]: Red
+	 * [1]: Green
+	 * [2]: Blue
+	 */
+	protected float[] innateSkillColor;
+
+	/**
+	 * This array sets the inactive innate skill color of a battle style.
+	 * It must be of size 3 with a float value between 0 and 1
+	 * [0]: Red
+	 * [1]: Green
+	 * [2]: Blue
+	 */
+	protected float[] innateInactiveColor;
+
 	protected int proficiencyXpPerKill = 0;
 	protected float jumpBoostPower = 0.0F;
 
@@ -98,9 +107,15 @@ public abstract class BattleStyle extends Skill
 	protected Map<WeaponCategory, AnimationProvider<?>> weaponDrawAnimations;
 	protected boolean modifiesAttacks;
 
+	/**
+	 * super must be called when creating a new battle style.
+	 * @param builder the builder.
+	 */
 	public BattleStyle(Builder<?> builder)
 	{
 		super (builder);
+		this.innateSkillColor = new float[]{0.0F, 0.64F, 0.72F};
+		this.innateInactiveColor = new float[]{0.5f, 0.5f, 0.5f};
 		this.unarmedAttackAnimations = Lists.newArrayList();
 		this.unarmedLivingMotions = Maps.newHashMap();
 		this.unarmedBattleMotions = Maps.newHashMap();
@@ -114,6 +129,11 @@ public abstract class BattleStyle extends Skill
 		this.unarmedInnateSkill = null;
 		this.unarmedPassiveSkill = null;
 		this.category = builder.battleStyleCategory;
+	}
+
+	public float[] getInnateInactiveColor()
+	{
+		return innateInactiveColor;
 	}
 
 	public Skill getUnarmedInnateSkill()
@@ -316,6 +336,10 @@ public abstract class BattleStyle extends Skill
 		guiGraphics.drawString(gui.font, remainTime, x + 12 - 4 * remainTime.length(), (y+6), 16777215, true);
 		poseStack.popPose();
 	}
+
+    public float[] getInnateSkillColor() {
+        return innateSkillColor;
+    }
 
 	public static class Builder<T extends BattleStyle> extends Skill.Builder<BattleStyle>
 	{
