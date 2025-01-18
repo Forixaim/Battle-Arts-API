@@ -305,7 +305,7 @@ public abstract class BattleStyle extends Skill
 	@Override
 	public void onRemoved(SkillContainer container)
 	{
-		if (container.getExecuter() instanceof ServerPlayerPatch spp)
+		if (container.getExecuter() instanceof ServerPlayerPatch spp && !(spp.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
 		{
 			spp.modifyLivingMotionByCurrentItem(false);
 			removeBattleStyleDependentSkills(spp);

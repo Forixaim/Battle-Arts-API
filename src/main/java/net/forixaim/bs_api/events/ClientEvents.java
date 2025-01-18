@@ -19,7 +19,7 @@ public class ClientEvents
 		event.register(KeyBinds.USE_BURST_ART);
 		event.register(KeyBinds.USE_ULTIMATE_ART);
 		event.register(KeyBinds.SHOW_BATTLE_STYLE_MENU);
-
+		event.register(KeyBinds.SHOW_PROFICIENCY_MENU);
 	}
 
 

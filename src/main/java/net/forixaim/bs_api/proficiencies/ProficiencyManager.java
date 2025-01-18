@@ -1,6 +1,5 @@
 package net.forixaim.bs_api.proficiencies;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -28,18 +27,13 @@ public class ProficiencyManager extends SimpleJsonResourceReloadListener
 	public static final List<Proficiency> REGISTERED_PROFICIENCIES = Lists.newArrayList();
 	private static final Gson GSON = new GsonBuilder().create();
 
-	public ProficiencyManager(Gson pGson, String pDirectory)
+	public ProficiencyManager()
 	{
 		super(GSON, "battle_arts_proficiency_parameters");
 	}
 
 	public static void createProficiencyRegistry(NewRegistryEvent event) {
 		event.create(RegistryBuilder.of(new ResourceLocation(BattleArtsAPI.MOD_ID, "proficiency")).addCallback(ProficiencyCallbacks.INSTANCE));
-	}
-
-	public static List<Proficiency> assignNewProficiencies()
-	{
-		return ImmutableList.copyOf(REGISTERED_PROFICIENCIES);
 	}
 
 	public static List<ResourceLocation> getRegisteredProficiencies()
@@ -57,21 +51,14 @@ public class ProficiencyManager extends SimpleJsonResourceReloadListener
 			ModLoader.get().postEvent(proficiencyRegistryEvent);
 
 			event.register(PROFICIENCY_REGISTRY_KEY, registerHelper ->
-			{
-				proficiencyRegistryEvent.getAllProficiencies().forEach(
-						proficiency ->
-						{
-							registerHelper.register(proficiency.getIdentifier(), proficiency);
-							REGISTERED_PROFICIENCIES.add(proficiency);
-						}
-				);
-			});
+                    proficiencyRegistryEvent.getAllProficiencies().forEach(
+                            proficiency ->
+                            {
+                                registerHelper.register(proficiency.getIdentifier(), proficiency);
+                                REGISTERED_PROFICIENCIES.add(proficiency);
+                            }
+                    ));
 		}
-	}
-
-	public static IForgeRegistry<Proficiency> getProficiencyRegistry()
-	{
-		return RegistryManager.ACTIVE.getRegistry(PROFICIENCY_REGISTRY_KEY);
 	}
 
 	@Override
