@@ -20,39 +20,4 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
 @Mod.EventBusSubscriber(modid = BattleArtsAPI.MOD_ID)
 public class WorldEvents
 {
-
-
-	@SubscribeEvent
-	public static void PlayerKill(LivingDeathEvent event)
-	{
-		if (event.getSource().is(DamageTypes.PLAYER_ATTACK))
-		{
-			if (event.getSource().getEntity() instanceof Player player)
-			{
-				PlayerPatch<?> playerPatch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
-				Skill skill = playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill();
-				WeaponCategory category = playerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND).getWeaponCategory();
-				player.getCapability(ProficiencyCapabilityProvider.PROFICIENCY_CAPABILITY).ifPresent(proficiencyCapability ->
-				{
-					proficiencyCapability.getProficiencies().forEach(proficiency ->
-					{
-						int battleStyleModifier = 0;
-						if (skill instanceof BattleStyle battleStyle)
-						{
-							if (battleStyle.checkProficiency(proficiency.getContainingProficiency()))
-								battleStyleModifier = battleStyle.getProficiencyBonus();
-						}
-						if (proficiency.getContainingProficiency() instanceof WeaponProficiency weaponProficiency && weaponProficiency.categoryMatch(category))
-						{
-							proficiency.addProficiency(1 + battleStyleModifier);
-						}
-						if (proficiency.getContainingProficiency() instanceof SpecialPredicateProficiency sPP && sPP.test(playerPatch))
-						{
-							proficiency.addProficiency(1 + battleStyleModifier);
-						}
-					});
-				});
-			}
-		}
-	}
 }

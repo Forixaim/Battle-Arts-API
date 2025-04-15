@@ -7,6 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.skill.Skill;
+import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -30,7 +31,7 @@ public abstract class ActiveSkill extends Skill
 	protected float manaConsumption;
 	protected float staminaConsumption;
 
-	public ActiveSkill(Builder<? extends Skill> builder) {
+	public ActiveSkill(SkillBuilder<? extends Skill> builder) {
 		super(builder);
 
 		this.properties = Lists.newArrayList();
@@ -58,27 +59,31 @@ public abstract class ActiveSkill extends Skill
 	}
 
 	@Override
-	public boolean canExecute(PlayerPatch<?> executer) {
-		ItemStack weapon = executer.getOriginal().getMainHandItem();
+	public boolean canExecute(SkillContainer container) {
+		ItemStack weapon = container.getExecutor().getOriginal().getMainHandItem();
 		WeaponCategory weaponCategory = EpicFightCapabilities.getItemStackCapability(weapon).getWeaponCategory();
-		if (executer.isLogicalClient())
+		if (container.getExecutor().isLogicalClient())
 		{
-			return super.canExecute(executer);
+			return super.canExecute(container);
 
 		} else {
-			ItemStack itemstack = executer.getOriginal().getMainHandItem();
+			ItemStack itemstack = container.getExecutor().getOriginal().getMainHandItem();
 
-			return super.canExecute(executer) && weaponCategoryMatch(weaponCategory)
-					&& executer.getOriginal().getVehicle() == null && (!executer.getSkill(this).isActivated() || this.activateType == ActivateType.TOGGLE);
+			return super.canExecute(container) && weaponCategoryMatch(weaponCategory)
+					&& container.getExecutor().getOriginal().getVehicle() == null && (!container.getExecutor().getSkill(this).isActivated() || this.activateType == ActivateType.TOGGLE);
 		}
 	}
 
 	@Override
-	public void executeOnServer(ServerPlayerPatch executor, FriendlyByteBuf args)
+	public void executeOnServer(SkillContainer container, FriendlyByteBuf args)
 	{
-		executor.setStamina(executor.getStamina() - staminaConsumption);
+		if (container.getExecutor() instanceof ServerPlayerPatch executor)
+		{
+			executor.setStamina(executor.getStamina() - staminaConsumption);
+		}
 
-		super.executeOnServer(executor, args);
+
+		super.executeOnServer(container, args);
 	}
 
 	@Override

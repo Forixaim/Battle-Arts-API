@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.registries.ForgeRegistries;
 import yesman.epicfight.api.utils.ParseUtil;
 import yesman.epicfight.skill.Skill;
+import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.passive.PassiveSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -24,7 +25,7 @@ public class BattleStyleDependentPassive extends PassiveSkill
 	protected Map<Attribute, AttributeModifier> attributes;
 	protected List<BattleStyle> battleStyles;
 
-	public BattleStyleDependentPassive(Builder<? extends Skill> builder)
+	public BattleStyleDependentPassive(SkillBuilder<? extends PassiveSkill> builder)
 	{
 		super(builder);
 	}
@@ -45,11 +46,11 @@ public class BattleStyleDependentPassive extends PassiveSkill
 	public void onInitiate(SkillContainer container)
 	{
 		container.setMaxDuration(this.maxDuration);
-		if (!totalCheck(container.getExecuter()))
+		if (!totalCheck(container.getExecutor()))
 		{
 			for (Map.Entry<Attribute, AttributeModifier> attributeAttributeModifierEntry : this.attributes.entrySet())
 			{
-				AttributeInstance attr = container.getExecuter().getOriginal().getAttribute(attributeAttributeModifierEntry.getKey());
+				AttributeInstance attr = container.getExecutor().getOriginal().getAttribute(attributeAttributeModifierEntry.getKey());
 				assert attr != null;
 				if (!attr.hasModifier(attributeAttributeModifierEntry.getValue()))
 				{

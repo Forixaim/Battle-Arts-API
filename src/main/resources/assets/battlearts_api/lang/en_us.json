@@ -31,5 +31,10 @@
   "skill.epicfight.battle_style.category": "Battle Style",
   "skill.epicfight.combat_art.category": "Combat Art",
   "skill.epicfight.burst_art.category": "Burst Art",
-  "skill.epicfight.ultimate_art.category": "Ultimate Art"
+  "skill.epicfight.ultimate_art.category": "Ultimate Art",
+
+  "epicfight.skill_slot.battle_style": "Battle Style",
+  "epicfight.skill_slot.combat_art": "Combat Art",
+  "epicfight.skill_slot.burst_art": "Burst Art",
+  "epicfight.skill_slot.ultimate_art": "Ultimate Art"
 }

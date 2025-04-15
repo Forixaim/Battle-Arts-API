@@ -22,6 +22,7 @@ import yesman.epicfight.api.utils.math.Vec2f;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
+import yesman.epicfight.config.ClientConfig;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
@@ -51,14 +52,14 @@ public class MixinBattleModeGUI
         Window sr = Minecraft.getInstance().getWindow();
         int width = sr.getGuiScaledWidth();
         int height = sr.getGuiScaledHeight();
-        Vec2i pos = EpicFightMod.CLIENT_CONFIGS.getWeaponInnatePosition(width, height);
+        Vec2i pos = ClientConfig.getWeaponInnatePosition(width, height);
 
         poseStack.pushPose();
         poseStack.translate(0, this.sliding, 0);
 
         boolean creative = playerpatch.getOriginal().isCreative();
         boolean fullstack = creative || container.isFull();
-        boolean canUse = !container.isDisabled() && container.getSkill().checkExecuteCondition(playerpatch);
+        boolean canUse = !container.isDisabled() && container.getSkill().checkExecuteCondition(container);
         float cooldownRatio = (fullstack || container.isActivated()) ? 1.0F : container.getResource(partialTicks);
         int vertexNum = 0;
         float iconSize = 32.0F;

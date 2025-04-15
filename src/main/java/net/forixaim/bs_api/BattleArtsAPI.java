@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
 
@@ -35,7 +36,6 @@ public class BattleArtsAPI
         //Register Registries
         modEventBus.addListener(ProficiencyManager::createProficiencyRegistry);
         modEventBus.addListener(ProficiencyManager::registerProficiencies);
-        modEventBus.addListener(DummyAnimations::register);
         MinecraftForge.EVENT_BUS.addListener(this::regTestCommands);
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);

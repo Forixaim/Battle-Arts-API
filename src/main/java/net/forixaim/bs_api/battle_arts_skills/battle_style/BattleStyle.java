@@ -26,16 +26,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import yesman.epicfight.api.animation.AnimationProvider;
+import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotion;
+import yesman.epicfight.api.animation.types.AttackAnimation;
+import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.ParseUtil;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.server.SPChangeSkill;
-import yesman.epicfight.skill.Skill;
-import yesman.epicfight.skill.SkillCategory;
-import yesman.epicfight.skill.SkillContainer;
-import yesman.epicfight.skill.SkillDataKey;
+import yesman.epicfight.skill.*;
+import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
@@ -95,16 +95,17 @@ public abstract class BattleStyle extends Skill
 	protected List<Proficiency> proficiencySpecialization;
 	protected BattleStyleCategory category;
 
-	protected List<AnimationProvider<?>> unarmedAttackAnimations;
-	protected Map<LivingMotion, AnimationProvider<?>> unarmedLivingMotions;
-	protected Map<LivingMotion, AnimationProvider<?>> unarmedBattleMotions;
+	protected List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> unarmedAttackAnimations;
+	protected Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> unarmedLivingMotions;
+	protected Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> unarmedBattleMotions;
+	protected Map<GuardSkill, Map<GuardSkill.BlockType, AnimationManager.AnimationAccessor<? extends StaticAnimation>>> guardMaps;
 	protected Skill unarmedInnateSkill;
 	protected Skill unarmedPassiveSkill;
 	protected final List<Skill> dependentSkills;
 
 
 	private final Map<Attribute, AttributeModifier> BattleStyleStatModifier;
-	protected Map<WeaponCategory, AnimationProvider<?>> weaponDrawAnimations;
+	protected Map<WeaponCategory, AnimationManager.AnimationAccessor<? extends StaticAnimation>> weaponDrawAnimations;
 	protected boolean modifiesAttacks;
 
 	/**
@@ -126,6 +127,7 @@ public abstract class BattleStyle extends Skill
 		this.proficiencySpecialization = Lists.newArrayList();
 		this.weaponDrawAnimations = Maps.newHashMap();
 		this.dependentSkills = Lists.newArrayList();
+		this.guardMaps = Maps.newHashMap();
 		this.unarmedInnateSkill = null;
 		this.unarmedPassiveSkill = null;
 		this.category = builder.battleStyleCategory;
@@ -139,6 +141,15 @@ public abstract class BattleStyle extends Skill
 	public Skill getUnarmedInnateSkill()
 	{
 		return unarmedInnateSkill;
+	}
+
+	public Map<GuardSkill, Map<GuardSkill.BlockType, AnimationManager.AnimationAccessor<? extends StaticAnimation>>> getGuardMaps() {
+		return guardMaps;
+	}
+
+	public boolean unarmedMoveset()
+	{
+		return false;
 	}
 
 	public Skill getUnarmedPassiveSkill()
@@ -173,17 +184,17 @@ public abstract class BattleStyle extends Skill
 		return this.unarmedBattleMotions != null && !this.unarmedBattleMotions.isEmpty();
 	}
 
-	public Map<LivingMotion, AnimationProvider<?>> getUnarmedBattleMotions()
+	public Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> getUnarmedBattleMotions()
 	{
 		return unarmedBattleMotions;
 	}
 
-	public List<AnimationProvider<?>> getUnarmedAttackAnimations()
+	public List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> getUnarmedAttackAnimations()
 	{
 		return unarmedAttackAnimations;
 	}
 
-	public Map<LivingMotion, AnimationProvider<?>> getUnarmedLivingMotions()
+	public Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> getUnarmedLivingMotions()
 	{
 		return unarmedLivingMotions;
 	}
@@ -212,12 +223,12 @@ public abstract class BattleStyle extends Skill
 		return modifiesAttacks;
 	}
 
-	public Map<WeaponCategory, AnimationProvider<?>> getWeaponDrawAnimations()
+	public Map<WeaponCategory, AnimationManager.AnimationAccessor<? extends StaticAnimation>> getWeaponDrawAnimations()
 	{
 		return weaponDrawAnimations;
 	}
 
-	public Map<LivingMotion, AnimationProvider<?>> getLivingMotionModifiers(LivingEntityPatch<?> entityPatch)
+	public Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> getLivingMotionModifiers(LivingEntityPatch<?> entityPatch)
 	{
 		if (this.unarmedLivingMotions == null)
 		{
@@ -260,23 +271,23 @@ public abstract class BattleStyle extends Skill
 	@Override
 	public void onInitiate(SkillContainer container)
 	{
-		if (container.getExecuter() instanceof ServerPlayerPatch spp)
+		if (container.getExecutor() instanceof ServerPlayerPatch spp)
 		{
 			if (!(spp.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
 				spp.modifyLivingMotionByCurrentItem(false);
 		}
 		for (Map.Entry<Attribute, AttributeModifier> stat : this.BattleStyleStatModifier.entrySet()) {
-			AttributeInstance attr = container.getExecuter().getOriginal().getAttribute(stat.getKey());
+			AttributeInstance attr = container.getExecutor().getOriginal().getAttribute(stat.getKey());
 
 			assert attr != null;
 			if (!attr.hasModifier(stat.getValue())) {
 				attr.addTransientModifier(stat.getValue());
 			}
 		}
-		container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_DAMAGE, UNIVERSAL_BATTLE_STYLE_UUID, event ->
+		container.getExecutor().getEventListener().addEventListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_DAMAGE, UNIVERSAL_BATTLE_STYLE_UUID, event ->
 		{
 			//Generate a number between 0 inclusive and 1 inclusive
-			float random = container.getExecuter().getOriginal().getRandom().nextFloat();
+			float random = container.getExecutor().getOriginal().getRandom().nextFloat();
 			CriticalHitEvent crit = ForgeHooks.getCriticalHit(event.getPlayerPatch().getOriginal(), event.getTarget(), false, random <= criticalHitChance ? 1 + getCriticalHitDamage() : 1.0f);
 			if (crit != null)
 			{
@@ -305,14 +316,14 @@ public abstract class BattleStyle extends Skill
 	@Override
 	public void onRemoved(SkillContainer container)
 	{
-		if (container.getExecuter() instanceof ServerPlayerPatch spp && !(spp.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
+		if (container.getExecutor() instanceof ServerPlayerPatch spp && !(spp.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
 		{
 			spp.modifyLivingMotionByCurrentItem(false);
 			removeBattleStyleDependentSkills(spp);
 		}
 
 		for (Map.Entry<Attribute, AttributeModifier> stat : this.BattleStyleStatModifier.entrySet()) {
-			AttributeInstance attr = container.getExecuter().getOriginal().getAttribute(stat.getKey());
+			AttributeInstance attr = container.getExecutor().getOriginal().getAttribute(stat.getKey());
 
 			assert attr != null;
 			if (attr.hasModifier(stat.getValue())) {
@@ -341,7 +352,7 @@ public abstract class BattleStyle extends Skill
         return innateSkillColor;
     }
 
-	public static class Builder<T extends BattleStyle> extends Skill.Builder<BattleStyle>
+	public static class Builder<T extends BattleStyle> extends SkillBuilder<BattleStyle>
 	{
 		protected List<Proficiency> proficiencies;
 		protected BattleStyleCategory battleStyleCategory;
@@ -354,6 +365,7 @@ public abstract class BattleStyle extends Skill
 			battleStyleCategory = BattleStyleCategories.STARTING;
 		}
 
+		@Override
 		public Builder<T> setRegistryName(ResourceLocation registryName) {
 			this.registryName = registryName;
 			return this;

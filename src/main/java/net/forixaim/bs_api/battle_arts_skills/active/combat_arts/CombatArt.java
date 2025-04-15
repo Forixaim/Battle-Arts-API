@@ -4,6 +4,7 @@ package net.forixaim.bs_api.battle_arts_skills.active.combat_arts;
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillCategories;
 import net.forixaim.bs_api.battle_arts_skills.active.ActiveSkill;
 import yesman.epicfight.skill.Skill;
+import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
 
 /**
@@ -13,12 +14,12 @@ import yesman.epicfight.skill.SkillContainer;
 public abstract class CombatArt extends ActiveSkill
 {
 
-	public static Builder<CombatArt> createCombatArt()
+	public static SkillBuilder<CombatArt> createCombatArt()
 	{
-		return (new Builder<CombatArt>().setCategory(BattleArtsSkillCategories.COMBAT_ART).setResource(Resource.COOLDOWN));
+		return (new SkillBuilder<CombatArt>().setCategory(BattleArtsSkillCategories.COMBAT_ART).setResource(Resource.COOLDOWN));
 	}
 
-	public CombatArt(Builder<? extends Skill> builder) {
+	public CombatArt(SkillBuilder<? extends CombatArt> builder) {
 		super(builder);
 	}
 
