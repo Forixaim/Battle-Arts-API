@@ -23,18 +23,18 @@ import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.config.ClientConfig;
-import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 
 @Mixin(value = BattleModeGui.class, remap = false)
-public class MixinBattleModeGUI
+public abstract class MixinBattleModeGUI
 {
     @Shadow private int sliding;
 
     @Shadow @Final private static Vec2f[] CLOCK_POS;
 
-    @Shadow public Font font;
+
+    @Shadow public abstract Font getFont();
 
     @Inject(method = "drawWeaponInnateIcon", at = @At("HEAD"), remap = false, cancellable = true)
     private void drawWeaponInnate(LocalPlayerPatch playerpatch, SkillContainer container, GuiGraphics guiGraphics, float partialTicks, CallbackInfo ci)
@@ -159,18 +159,18 @@ public class MixinBattleModeGUI
 
         if (container.isActivated() && (container.getSkill().getActivateType() == Skill.ActivateType.DURATION || container.getSkill().getActivateType() == Skill.ActivateType.DURATION_INFINITE)) {
             String s = String.format("%.0f", container.getRemainDuration() / 20.0F);
-            int stringWidth = (this.font.width(s) - 6) / 3;
-            guiGraphics.drawString(this.font, s, pos.x + 13 - stringWidth, pos.y + 13, 16777215, true);
+            int stringWidth = (this.getFont().width(s) - 6) / 3;
+            guiGraphics.drawString(this.getFont(), s, pos.x + 13 - stringWidth, pos.y + 13, 16777215, true);
         } else if (!fullstack) {
             String s = String.valueOf((int)(cooldownRatio * 100.0F));
-            int stringWidth = (this.font.width(s) - 6) / 3;
-            guiGraphics.drawString(this.font, s, pos.x + 13 - stringWidth, pos.y + 13, 16777215, true);
+            int stringWidth = (this.getFont().width(s) - 6) / 3;
+            guiGraphics.drawString(this.getFont(), s, pos.x + 13 - stringWidth, pos.y + 13, 16777215, true);
         }
 
         if (container.getSkill().getMaxStack() > 1) {
             String s = String.valueOf(container.getStack());
-            int stringWidth = (this.font.width(s) - 6) / 3;
-            guiGraphics.drawString(font, s, pos.x + 25 - stringWidth, pos.y + 22, 16777215, true);
+            int stringWidth = (this.getFont().width(s) - 6) / 3;
+            guiGraphics.drawString(getFont(), s, pos.x + 25 - stringWidth, pos.y + 22, 16777215, true);
         }
 
         poseStack.popPose();

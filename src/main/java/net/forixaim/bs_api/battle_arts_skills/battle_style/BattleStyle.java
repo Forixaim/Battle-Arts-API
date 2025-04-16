@@ -344,7 +344,7 @@ public abstract class BattleStyle extends Skill
 		poseStack.translate(0, (float)gui.getSlidingProgression(), 0);
 		guiGraphics.blit(this.getSkillTexture(), (int)x, (int)y, 24, 24, 0, 0, 1, 1, 1, 1);
 		String remainTime = String.format("%.0f", container.getMaxResource() - container.getResource());
-		guiGraphics.drawString(gui.font, remainTime, x + 12 - 4 * remainTime.length(), (y+6), 16777215, true);
+		guiGraphics.drawString(gui.getFont(), remainTime, x + 12 - 4 * remainTime.length(), (y+6), 16777215, true);
 		poseStack.popPose();
 	}
 
