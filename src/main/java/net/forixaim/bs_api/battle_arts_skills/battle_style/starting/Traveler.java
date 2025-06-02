@@ -1,7 +1,6 @@
 package net.forixaim.bs_api.battle_arts_skills.battle_style.starting;
 
 import net.forixaim.bs_api.battle_arts_skills.battle_style.BattleStyle;
-import net.forixaim.bs_api.tests.DummyAnimations;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.skill.Skill;

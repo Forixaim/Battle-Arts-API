@@ -5,7 +5,7 @@ import yesman.epicfight.skill.SkillCategory;
 public enum BattleArtsSkillCategories implements SkillCategory
 {
 	BATTLE_STYLE(true, true, true),
-	TAUNT(true, true, false),
+	MANA_ART(true, true, true),
 	COMBAT_ART(true, true, true),
 	BURST_ART(true, true, true),
 	ULTIMATE_ART(true, true, true);

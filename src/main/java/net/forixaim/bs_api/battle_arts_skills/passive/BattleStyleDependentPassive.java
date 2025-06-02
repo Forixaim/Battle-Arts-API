@@ -75,7 +75,7 @@ public class BattleStyleDependentPassive extends PassiveSkill
 			{
 				CompoundTag comp = (CompoundTag) tag;
 				String attribute = comp.getString("attribute");
-				Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation(attribute));
+				Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.parse(attribute));
 				AttributeModifier modifier = ParseUtil.toAttributeModifier(comp);
 				this.attributes.put(attr, modifier);
 			}

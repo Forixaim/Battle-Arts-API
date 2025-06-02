@@ -15,7 +15,7 @@ public class TagRegistry
 
         private static TagKey<EntityType<?>> createEntityTag(String name)
         {
-            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("battle_arts", name));
+            return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("battle_arts", name));
         }
     }
 }

@@ -5,8 +5,6 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillCategories;
 import net.forixaim.bs_api.battle_arts_skills.passive.BattleStyleDependentPassive;
-import net.forixaim.bs_api.proficiencies.Proficiency;
-import net.forixaim.bs_api.proficiencies.ProficiencyRank;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -89,10 +87,8 @@ public abstract class BattleStyle extends Skill
 	protected float criticalHitChance = 0.5F;
 	protected float criticalHitDamage = 0.5F;
 
-	protected Map<Proficiency, ProficiencyRank> requiredProficiencies;
 	protected List<ResourceKey<DamageType>> immuneDamages;
 	protected List<TagKey<DamageType>> immuneModdedDamages;
-	protected List<Proficiency> proficiencySpecialization;
 	protected BattleStyleCategory category;
 
 	protected List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> unarmedAttackAnimations;
@@ -123,8 +119,6 @@ public abstract class BattleStyle extends Skill
 		this.BattleStyleStatModifier = Maps.newHashMap();
 		this.immuneDamages = Lists.newArrayList();
 		this.immuneModdedDamages = Lists.newArrayList();
-		this.requiredProficiencies = Maps.newHashMap();
-		this.proficiencySpecialization = Lists.newArrayList();
 		this.weaponDrawAnimations = Maps.newHashMap();
 		this.dependentSkills = Lists.newArrayList();
 		this.guardMaps = Maps.newHashMap();
@@ -155,18 +149,6 @@ public abstract class BattleStyle extends Skill
 	public Skill getUnarmedPassiveSkill()
 	{
 		return unarmedPassiveSkill;
-	}
-
-	public boolean checkProficiency(Proficiency proficiency)
-	{
-		for (Proficiency testProficiency : this.proficiencySpecialization)
-		{
-			if (testProficiency == proficiency)
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public boolean modifiesUnarmedAttacks()
@@ -249,7 +231,7 @@ public abstract class BattleStyle extends Skill
 			for (Tag tag : attributeList) {
 				CompoundTag comp = (CompoundTag)tag;
 				String attribute = comp.getString("attribute");
-				Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation(attribute));
+				Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.parse(attribute));
 				AttributeModifier modifier = ParseUtil.toAttributeModifier(comp);
 
 				this.BattleStyleStatModifier.put(attr, modifier);
@@ -354,14 +336,12 @@ public abstract class BattleStyle extends Skill
 
 	public static class Builder<T extends BattleStyle> extends SkillBuilder<BattleStyle>
 	{
-		protected List<Proficiency> proficiencies;
 		protected BattleStyleCategory battleStyleCategory;
 
 
 		public Builder()
 		{
 			super();
-			proficiencies = Lists.newArrayList();
 			battleStyleCategory = BattleStyleCategories.STARTING;
 		}
 
@@ -388,12 +368,6 @@ public abstract class BattleStyle extends Skill
 
 		public Builder<T> setCreativeTab(CreativeModeTab tab) {
 			this.tab = tab;
-			return this;
-		}
-
-		public Builder<T> addProficiencySpecialization(Proficiency proficiency)
-		{
-			proficiencies.add(proficiency);
 			return this;
 		}
 

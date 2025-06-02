@@ -1,0 +1,12 @@
+{
+  "xp_requirement": 0,
+  "attribute_modifiers": [
+    {
+      "attribute": "irons_spellbooks:mana_regen",
+      "name": "mana_regen_dampened",
+      "uuid": "9e069b17-fff4-4ae0-a7ae-79ec84a667dc",
+      "operation": "multiply_total",
+      "amount": -0.9
+    }
+  ]
+}

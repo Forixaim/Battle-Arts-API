@@ -1,0 +1,9 @@
+{
+  "textures":
+  [
+    "battlearts_api:charge_aura/aura0",
+    "battlearts_api:charge_aura/aura1",
+    "battlearts_api:charge_aura/aura2",
+    "battlearts_api:charge_aura/aura3"
+  ]
+}

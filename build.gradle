@@ -87,6 +87,12 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+
+    maven {
+        name = "Iron's Maven - Release"
+        url = "https://code.redspace.io/releases"
+    }
+
     maven { url 'https://maven.theillusivec4.top/' }
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
     flatDir {
@@ -96,15 +102,18 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("libs:EpicFight:20.10.1")
-    implementation fg.deobf("libs:EpicParcool:20.10.1")
+    implementation fg.deobf("curse.maven:epic-fight-mod-405076:6602479")
+    implementation fg.deobf("curse.maven:official-epic-fight-x-parcool-1259252:6504772")
     runtimeOnly fg.deobf("curse.maven:parcool-482378:6189397")
     implementation fg.deobf("curse.maven:project-mmo-353935:6142256")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
-    runtimeOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:${caelus_version}")
-    compileOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:${caelus_version}")
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.2')
+    runtimeOnly fg.deobf("libs:ExCap:20.10.7.11")
+    runtimeOnly fg.deobf("libs:BattleArts:20.10.7.14")
+
+    runtimeOnly fg.deobf("curse.maven:caelus-308989:4581481")
+    runtimeOnly fg.deobf("curse.maven:playeranimator-658587:4587214")
+    implementation fg.deobf("io.redspace.ironsspellbooks:irons_spellbooks:${irons_spells_version}")
+    implementation fg.deobf("curse.maven:curios-309927:6418456")
 
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
