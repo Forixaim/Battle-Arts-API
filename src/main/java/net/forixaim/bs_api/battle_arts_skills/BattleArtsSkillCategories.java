@@ -6,9 +6,9 @@ public enum BattleArtsSkillCategories implements SkillCategory
 {
 	BATTLE_STYLE(true, true, true),
 	MANA_ART(true, true, true),
-	COMBAT_ART(true, true, true),
-	BURST_ART(true, true, true),
-	ULTIMATE_ART(true, true, true);
+	COMBAT_ART(true, true, false),
+	BURST_ART(true, true, false),
+	ULTIMATE_ART(true, true, false);
 
 	final boolean Save;
 	final boolean Sync;

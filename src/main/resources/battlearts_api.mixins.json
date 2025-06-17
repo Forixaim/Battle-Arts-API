@@ -15,7 +15,12 @@
   "client": [
     "MixinBattleModeGUI",
     "MixinControlEngine",
-    "MixinSkillbookRenderer"
+    "MixinSkillbookRenderer",
+    "MixinSkillTreeNodeButton",
+    "NodeButtonAccessor",
+    "SkillTreeNodeStateAccessor",
+    "SkillTreeScreenAccessor",
+    "TreePageAccessor"
   ],
   "injectors": {
     "defaultRequire": 0
