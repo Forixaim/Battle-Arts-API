@@ -1,4 +1,4 @@
-package net.forixaim.bs_api.mixin;
+package net.forixaim.bs_api.mixin.optional;
 
 import com.yesman.epicskills.client.gui.screen.SkillTreeScreen;
 import org.spongepowered.asm.mixin.Mixin;

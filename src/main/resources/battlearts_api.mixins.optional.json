@@ -1,0 +1,20 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "net.forixaim.bs_api.mixin.optional",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "battlearts_api.refmap.json",
+  "mixins": [
+    "MixinDummy"
+  ],
+  "client": [
+    "MixinSkillTreeNodeButton",
+    "NodeButtonAccessor",
+    "SkillTreeNodeStateAccessor",
+    "SkillTreeScreenAccessor",
+    "TreePageAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

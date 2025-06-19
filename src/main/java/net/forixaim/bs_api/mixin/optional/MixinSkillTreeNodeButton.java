@@ -1,4 +1,4 @@
-package net.forixaim.bs_api.mixin;
+package net.forixaim.bs_api.mixin.optional;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
