@@ -1,7 +1,9 @@
 package net.forixaim.bs_api;
 
+import com.yesman.epicskills.client.gui.screen.CategorySlotTexture;
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.bs_api.battle_arts_skills.BattleArtsSkillCategories;
+import net.forixaim.bs_api.battle_arts_skills.BattleArtsSlotTextures;
 import net.forixaim.bs_api.battle_arts_skills.battle_style.BattleStyleCategories;
 import net.forixaim.bs_api.battle_arts_skills.battle_style.BattleStyleCategory;
 import net.forixaim.bs_api.registry.ManaArtsDataKeys;
@@ -27,6 +29,7 @@ public class BattleArtsAPI
         BattleStyleCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleStyleCategories.class);
         SkillCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillCategories.class);
         SkillSlot.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillSlots.class);
+        CategorySlotTexture.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSlotTextures.class);
         ManaArtsDataKeys.DATA_KEYS.register(modEventBus);
         ParticleRegistry.PARTICLES.register(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);

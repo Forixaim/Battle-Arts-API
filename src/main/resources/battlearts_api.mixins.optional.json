@@ -8,11 +8,6 @@
     "MixinDummy"
   ],
   "client": [
-    "MixinSkillTreeNodeButton",
-    "NodeButtonAccessor",
-    "SkillTreeNodeStateAccessor",
-    "SkillTreeScreenAccessor",
-    "TreePageAccessor"
   ],
   "injectors": {
     "defaultRequire": 0
