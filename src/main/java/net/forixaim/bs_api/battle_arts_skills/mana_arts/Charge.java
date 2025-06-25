@@ -7,11 +7,9 @@ import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import net.forixaim.bs_api.animations.ManaArtsAnimations;
 import net.forixaim.bs_api.client.KeyBinds;
 import net.forixaim.bs_api.registry.ManaArtsDataKeys;
-import net.forixaim.bs_api.registry.ParticleRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.fml.ModList;
@@ -23,7 +21,6 @@ import yesman.epicfight.skill.ChargeableSkill;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
-import yesman.epicfight.skill.passive.PassiveSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
@@ -67,11 +64,19 @@ public class Charge extends ManaArt implements ChargeableSkill
         caster.getOriginal().level().addParticle(ParticleTypes.SOUL_FIRE_FLAME, caster.getOriginal().getX() + ((caster.getOriginal().getRandom().nextDouble() * 2) - 1) * 0.5, caster.getOriginal().getY(), caster.getOriginal().getZ() + ((caster.getOriginal().getRandom().nextDouble() * 2) - 1) * 0.5, ((caster.getOriginal().getRandom().nextDouble() * 2) - 1) * 0.1, 0.1, ((caster.getOriginal().getRandom().nextDouble() * 2) - 1) * 0.1);
         if (ModList.get().isLoaded(IronsSpellbooks.MODID))
         {
-            if (MagicData.getPlayerMagicData(caster.getOriginal()).getMana() < caster.getOriginal().getAttributeValue(AttributeRegistry.MAX_MANA.get()))
+            try
             {
-                int manaCharge = (int) (caster.getOriginal().getAttributeValue(AttributeRegistry.MAX_MANA.get()) / 200);
-                MagicData.getPlayerMagicData(caster.getOriginal()).addMana(manaCharge);
+                if (MagicData.getPlayerMagicData(caster.getOriginal()).getMana() < caster.getOriginal().getAttributeValue(AttributeRegistry.MAX_MANA.get()))
+                {
+                    int manaCharge = (int) (caster.getOriginal().getAttributeValue(AttributeRegistry.MAX_MANA.get()) / 200);
+                    MagicData.getPlayerMagicData(caster.getOriginal()).addMana(manaCharge);
+                }
             }
+            catch (Exception e)
+            {
+
+            }
+            
         }
     }
 
