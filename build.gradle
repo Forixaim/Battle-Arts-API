@@ -103,11 +103,10 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("libs:epicfight:20.12.1")
-    implementation fg.deobf("libs:epicskills:20.12.1")
+    implementation fg.deobf("curse.maven:epic-fight-mod-405076:6854306")
     implementation fg.deobf("curse.maven:project-mmo-353935:6142256")
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.2')
-
+    implementation fg.deobf("curse.maven:epic-fight-skill-tree-1295882:6854381")
     runtimeOnly fg.deobf("curse.maven:caelus-308989:4581481")
     runtimeOnly fg.deobf("curse.maven:playeranimator-658587:4587214")
     implementation fg.deobf("io.redspace.ironsspellbooks:irons_spellbooks:${irons_spells_version}")

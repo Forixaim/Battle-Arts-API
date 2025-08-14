@@ -1,19 +1,17 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.forixaim.bs_api.mixin",
+  "package": "net.forixaim.battle_arts_api.mixin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "battlearts_api.refmap.json",
   "mixins": [
     "MixinCapabilityItem",
     "MixinEnchant",
     "MixinEntity",
-    "MixinLivingEntity",
     "MixinPlayerCritical",
     "MixinWeaponInnateSkill"
   ],
   "client": [
-    "MixinBattleModeGUI",
     "MixinControlEngine",
     "MixinSkillbookRenderer"
   ],

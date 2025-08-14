@@ -1,7 +1,7 @@
 {
 
-  "skill.bs_api.traveler": "Traveler",
-  "skill.bs_api.traveler.tooltip": "Not meant to be used.",
+  "skill.battlearts_api.traveler": "Traveler",
+  "skill.battlearts_api.traveler.tooltip": "Not meant to be used.",
 
   "skill.battlearts_api.mana_charge": "Mana Charge",
   "skill.battlearts_api.mana_charge.tooltip": "Severely dampens your mana regeneration speed, but in exchange... you gain an active charge ability that charges your mana extremely fast.",
