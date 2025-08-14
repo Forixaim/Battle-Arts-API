@@ -96,6 +96,19 @@ repositories {
 
     maven { url 'https://maven.theillusivec4.top/' }
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven {
+        url = "https://maven.architectury.dev"
+        content {
+            includeGroup "dev.architectury"
+        }
+    }
+
+    maven {
+        url = "https://maven.latvian.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
     flatDir {
          dir 'libs'
     }
@@ -111,6 +124,11 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:playeranimator-658587:4587214")
     implementation fg.deobf("io.redspace.ironsspellbooks:irons_spellbooks:${irons_spells_version}")
     implementation fg.deobf("curse.maven:curios-309927:6418456")
+
+    // KubeJS compatibility
+    implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
+    implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
+    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
 
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
