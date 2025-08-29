@@ -1,6 +1,7 @@
 package net.forixaim.battle_arts_api.mixin;
 
 
+import net.forixaim.battle_arts_api.Config;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyle;
 import net.minecraft.core.BlockPos;
@@ -31,7 +32,7 @@ public abstract class MixinEntity
 	@Inject(method = "walkingStepSound", at = @At("HEAD"), cancellable = true)
 	public void steppy(BlockPos pPos, BlockState pState, CallbackInfo ci)
 	{
-		if (battle_arts$entity instanceof Player pl && EpicFightCapabilities.getEntityPatch(pl, PlayerPatch.class).isEpicFightMode())
+		if (battle_arts$entity instanceof Player pl && EpicFightCapabilities.getEntityPatch(pl, PlayerPatch.class).isEpicFightMode() && Config.allowSoundOverrides)
 			ci.cancel();
 	}
 

@@ -14,14 +14,17 @@ public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec.BooleanValue RANDOM_CRITICAL_HITS = BUILDER.comment("Enable random critical hits").define("randomCriticalHits", true);
+    public static final ForgeConfigSpec.BooleanValue ALLOW_SOUND_OVERRIDES = BUILDER.comment("Allows Battle Arts API to override footsteps and replace it with keyframed ones (will break footsteps) [Not compatible with Prescence Footsteps]").define("allowSoundOverrides", false);
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static boolean randomCriticalHits;
+    public static boolean allowSoundOverrides;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
     {
+        allowSoundOverrides = ALLOW_SOUND_OVERRIDES.get();
         randomCriticalHits = RANDOM_CRITICAL_HITS.get();
     }
 }

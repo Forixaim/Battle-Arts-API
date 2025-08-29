@@ -9,6 +9,7 @@ import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleC
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleCategory;
 import net.forixaim.battle_arts_api.registry.ManaArtsDataKeys;
 import net.forixaim.battle_arts_api.registry.ParticleRegistry;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
 
@@ -31,7 +33,7 @@ public class BattleArtsAPI
     public BattleArtsAPI(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
         BattleStyleCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleStyleCategories.class);
-        if (ModList.get().isLoaded(EpicSkills.MODID))
+        if (ModList.get().isLoaded(EpicSkills.MODID) && FMLEnvironment.dist == Dist.CLIENT)
             CategorySlotTexture.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsTextures.class);
         SkillCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillCategories.class);
         SkillSlot.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillSlots.class);
