@@ -6,6 +6,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -77,6 +78,15 @@ public abstract class MixinCapabilityItem
 		}
 	}
 
+	/**
+	 * @author
+	 * @reason add a skill reset
+	 */
+	@Overwrite
+	public void changeWeaponInnateSkill(PlayerPatch<?> playerPatch, ItemStack itemStack)
+	{
+
+	}
 
 	@Inject(method = "changeWeaponInnateSkill", at = @At("RETURN"), remap = false)
 	public void changeWeaponInnate(PlayerPatch<?> playerPatch, ItemStack itemstack, CallbackInfo ci)
@@ -87,6 +97,8 @@ public abstract class MixinCapabilityItem
 		{
 			Skill weaponInnateSkill = null;
 			Skill skill = null;
+			//Reset Skills
+
 			if (!playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
 			{
 				weaponInnateSkill = battleStyle.getUnarmedInnateSkill();
@@ -100,6 +112,8 @@ public abstract class MixinCapabilityItem
 
 			String skillName = "";
 			SkillContainer weaponInnateSkillContainer = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
+			//Reset it first
+			weaponInnateSkillContainer.setSkill(null);
 			if (weaponInnateSkill != null)
 			{
 				if (weaponInnateSkillContainer.getSkill() != weaponInnateSkill)
