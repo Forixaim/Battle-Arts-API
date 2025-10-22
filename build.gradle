@@ -117,7 +117,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     implementation fg.deobf("curse.maven:epic-fight-mod-405076:6921772")
-    implementation fg.deobf("curse.maven:project-mmo-353935:6142256")
+    //implementation fg.deobf("curse.maven:project-mmo-353935:6142256")
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.2')
     implementation fg.deobf("curse.maven:epic-fight-skill-tree-1295882:6854381")
     implementation fg.deobf("curse.maven:presence-footsteps-forge-433068:5015286")

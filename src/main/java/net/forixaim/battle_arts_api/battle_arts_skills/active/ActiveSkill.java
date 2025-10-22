@@ -2,6 +2,8 @@ package net.forixaim.battle_arts_api.battle_arts_skills.active;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillSlots;
+import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
@@ -25,14 +27,12 @@ public abstract class ActiveSkill extends Skill
 	//General Lists of allowed weapons and properties.
 	protected List<WeaponCategory> allowedWeapons = Lists.newArrayList();
 	protected List<Map<AnimationProperty.AttackPhaseProperty<?>, Object>> properties;
-
-	//Resource Consumption
 	protected float manaConsumption;
+    protected float meterUsage;
 	protected float staminaConsumption;
 
 	public ActiveSkill(SkillBuilder<? extends Skill> builder) {
 		super(builder);
-
 		this.properties = Lists.newArrayList();
 	}
 
@@ -41,11 +41,11 @@ public abstract class ActiveSkill extends Skill
 	{
 		super.setParams(parameters);
 		this.manaConsumption = parameters.getFloat("mana_consumption");
+        this.meterUsage = parameters.getFloat("meter_usage");
 		this.staminaConsumption = parameters.getFloat("stamina_consumption");
 	}
 
-
-	protected boolean weaponCategoryMatch(WeaponCategory category)
+    protected boolean weaponCategoryMatch(WeaponCategory category)
 	{
 		for (WeaponCategory category1 : allowedWeapons)
 		{
@@ -57,7 +57,17 @@ public abstract class ActiveSkill extends Skill
 		return false;
 	}
 
-	@Override
+    protected boolean hasMeter(SkillContainer container)
+    {
+
+        if (container.getExecutor().getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getDataManager().hasData(CoreAPIDataKeys.METER_FILL.get()))
+        {
+            return container.getExecutor().getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get()) >= meterUsage;
+        }
+        return meterUsage <= 0;
+    }
+
+    @Override
 	public boolean canExecute(SkillContainer container) {
 		ItemStack weapon = container.getExecutor().getOriginal().getMainHandItem();
 		WeaponCategory weaponCategory = EpicFightCapabilities.getItemStackCapability(weapon).getWeaponCategory();
@@ -66,12 +76,15 @@ public abstract class ActiveSkill extends Skill
 			return super.canExecute(container);
 
 		} else {
-			ItemStack itemstack = container.getExecutor().getOriginal().getMainHandItem();
-
-			return super.canExecute(container) && weaponCategoryMatch(weaponCategory)
+            return super.canExecute(container) && weaponCategoryMatch(weaponCategory) && hasMeter(container)
 					&& container.getExecutor().getOriginal().getVehicle() == null && (!container.getExecutor().getSkill(this).isActivated() || this.activateType == ActivateType.TOGGLE);
 		}
 	}
+
+    private float consumeMeter(float data)
+    {
+        return data - manaConsumption;
+    }
 
 	@Override
 	public void executeOnServer(SkillContainer container, FriendlyByteBuf args)
@@ -80,10 +93,12 @@ public abstract class ActiveSkill extends Skill
 		{
 			executor.setStamina(executor.getStamina() - staminaConsumption);
 		}
-
-
+        if (hasMeter(container))
+            container.getExecutor().getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getDataManager().setDataSyncF(CoreAPIDataKeys.METER_FILL.get(), this::consumeMeter);
 		super.executeOnServer(container, args);
 	}
+
+
 
 	@Override
 	public void onInitiate(SkillContainer container) {
