@@ -83,7 +83,7 @@ public abstract class ActiveSkill extends Skill
 
     private float consumeMeter(float data)
     {
-        return data - manaConsumption;
+        return data - meterUsage;
     }
 
 	@Override

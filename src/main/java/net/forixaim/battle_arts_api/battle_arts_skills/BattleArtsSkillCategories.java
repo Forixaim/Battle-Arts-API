@@ -1,10 +1,12 @@
 package net.forixaim.battle_arts_api.battle_arts_skills;
 
+import net.forixaim.battle_arts_api.BattleArtsAPI;
+import net.minecraft.resources.ResourceLocation;
 import yesman.epicfight.skill.SkillCategory;
 
 public enum BattleArtsSkillCategories implements SkillCategory
 {
-	BATTLE_STYLE(true, true, true),
+	BATTLE_STYLE(true, true, true, ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "skillbook_battle_style")),
 	MANA_ART(true, true, true),
 	COMBAT_ART(true, true, false),
 	BURST_ART(true, true, false),
@@ -14,6 +16,7 @@ public enum BattleArtsSkillCategories implements SkillCategory
 	final boolean Sync;
 	final boolean Modifiable;
 	final int ID;
+    ResourceLocation bookIcon = null;
 
 	BattleArtsSkillCategories(boolean ShouldSave, boolean ShouldSync, boolean Modifiable)
 	{
@@ -22,6 +25,15 @@ public enum BattleArtsSkillCategories implements SkillCategory
 		this.Sync = ShouldSync;
 		this.ID = SkillCategory.ENUM_MANAGER.assign(this);
 	}
+
+    BattleArtsSkillCategories(boolean ShouldSave, boolean ShouldSync, boolean Modifiable, ResourceLocation bookIcon)
+    {
+        this.Modifiable = Modifiable;
+        this.Save = ShouldSave;
+        this.Sync = ShouldSync;
+        this.ID = SkillCategory.ENUM_MANAGER.assign(this);
+        this.bookIcon = bookIcon;
+    }
 
 	@Override
 	public boolean shouldSave()
@@ -45,4 +57,13 @@ public enum BattleArtsSkillCategories implements SkillCategory
 	{
 		return this.ID;
 	}
+
+    @Override
+    public ResourceLocation bookIcon() {
+        if (bookIcon != null)
+        {
+            return bookIcon;
+        }
+        return SkillCategory.super.bookIcon();
+    }
 }

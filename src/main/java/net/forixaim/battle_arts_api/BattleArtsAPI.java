@@ -29,6 +29,8 @@ import yesman.epicfight.skill.SkillSlot;
 @Mod(BattleArtsAPI.MOD_ID)
 public class BattleArtsAPI
 {
+    //Local Debug Controls
+    public static final boolean debugMode = false;
     public static final String MOD_ID = "battlearts_api";
 
     public BattleArtsAPI(FMLJavaModLoadingContext context) {

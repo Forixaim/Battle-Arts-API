@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import net.forixaim.battle_arts_api.BattleArtsAPI;
+import net.forixaim.battle_arts_api.Config;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillCategories;
 import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.forixaim.battle_arts_api.battle_arts_skills.passive.BattleStyleDependentPassive;
@@ -239,7 +240,7 @@ public abstract class BattleStyle extends Skill
 
         if (parameters.contains("max_meter"))
         {
-            parameters.getInt("max_meter");
+            maxMeter = parameters.getInt("max_meter");
         }
 
 		this.BattleStyleStatModifier.clear();
@@ -345,7 +346,7 @@ public abstract class BattleStyle extends Skill
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
-        if (container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get()) < 1000 && !container.getExecutor().isLogicalClient()) {
+        if (BattleArtsAPI.debugMode && container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get()) < (maxMeter * 100) && !container.getExecutor().isLogicalClient()) {
             container.getDataManager().setDataSyncF(CoreAPIDataKeys.METER_FILL.get(), data -> data + 1);
         }
         if (container.getExecutor() instanceof LocalPlayerPatch localPlayerPatch && localPlayerPatch.isTargetLockedOn())
@@ -358,14 +359,18 @@ public abstract class BattleStyle extends Skill
         }
     }
 
+    public int getMaxMeter() {
+        return maxMeter;
+    }
+
     @OnlyIn(Dist.CLIENT)
 	@Override
 	public void drawOnGui(BattleModeGui gui, SkillContainer container, GuiGraphics guiGraphics, float x, float y, float pt) {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
         float meterLevel = container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get());
-        poseStack.translate(-200, 0, 0);
-        poseStack.scale(1f, 1f, 1f);
+        poseStack.translate(Config.superMeterPositionX, Config.superMeterPositionY, 0);
+        poseStack.scale((float) Config.superMeterScaleX, (float) Config.superMeterScaleY, 1f);
         guiGraphics.blit(CONTAINER_TEX, (int)x, (int)y, 0, 0, 128, 8, 128, 8);
         for (int i = Math.max(0, (int) meterLevel / 100 - 1); i < (int) meterLevel / 100 && i < 10; i++) {
             ResourceLocation tex = BARS.get(Math.min(i, BARS.size() - 1));

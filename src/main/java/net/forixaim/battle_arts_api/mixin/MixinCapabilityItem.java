@@ -4,6 +4,7 @@ import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyle;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,7 +50,7 @@ public abstract class MixinCapabilityItem
 		{
 			if (!playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
 			{
-				if (battleStyle.modifiesUnarmedLMs())
+				if (battleStyle.modifiesUnarmedLMs() && playerPatch.getOriginal().getMainHandItem().is(Items.AIR))
 					cir.setReturnValue(battleStyle.getUnarmedLivingMotions());
 			}
 		}
@@ -60,23 +61,12 @@ public abstract class MixinCapabilityItem
 	{
 		if (playerpatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle style)
 		{
-			if (!style.getGuardMaps().isEmpty() && !style.getGuardMaps().get(skill).isEmpty() && style.getGuardMaps().get(skill).containsKey(blockType))
+			if (style.getGuardMaps() != null && !style.getGuardMaps().isEmpty() && style.getGuardMaps().get(skill) != null &&!style.getGuardMaps().get(skill).isEmpty() && style.getGuardMaps().get(skill).containsKey(blockType))
 			{
 				cir.setReturnValue(style.getGuardMaps().get(skill).get(blockType));
 			}
 		}
 	}
-
-	@Inject(method = "getUseAnimation", at = @At("RETURN"), remap = false, cancellable = true)
-	public void getUseAnim(LivingEntityPatch<?> entityPatch, CallbackInfoReturnable<UseAnim> cir)
-	{
-		if (!(entityPatch.getOriginal().getItemInHand(InteractionHand.MAIN_HAND).getUseAnimation() == UseAnim.NONE))
-		{
-			if (entityPatch instanceof PlayerPatch<?> pP && pP.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle style && style.getUnarmedLivingMotions().containsKey(LivingMotions.BLOCK))
-				cir.setReturnValue(UseAnim.BLOCK);
-		}
-	}
-
 
 	@Inject(method = "changeWeaponInnateSkill", at = @At("RETURN"), remap = false)
 	public void changeWeaponInnate(PlayerPatch<?> playerPatch, ItemStack itemstack, CallbackInfo ci)
@@ -98,8 +88,7 @@ public abstract class MixinCapabilityItem
 				((ServerPlayerPatch) playerPatch).modifyLivingMotionByCurrentItem();
 			}
 
-			String skillName = "";
-			SkillContainer weaponInnateSkillContainer = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
+            SkillContainer weaponInnateSkillContainer = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
 			if (weaponInnateSkill != null)
 			{
 				if (weaponInnateSkillContainer.getSkill() != weaponInnateSkill)
@@ -128,17 +117,6 @@ public abstract class MixinCapabilityItem
 				passiveSkillContainer.setSkill(null);
 				toLocal.and(new SPChangeSkill(SkillSlots.WEAPON_PASSIVE, playerPatch.getOriginal().getId(), null));
 				toRemote.and(new SPSetRemotePlayerSkill(playerPatch.getOriginal().getId(), SkillSlots.WEAPON_PASSIVE, skill));			}
-		}
-
-	}
-
-	@Inject(method = "getAutoAttackMotion", at = @At("HEAD"), remap = false, cancellable = true)
-	public void getAutoAttackMotion(PlayerPatch<?> playerPatch, CallbackInfoReturnable<List<AnimationManager.AnimationAccessor<? extends AttackAnimation>>> cir)
-	{
-		if (!playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
-		{
-			if (battleStyle.modifiesUnarmedAttacks())
-				cir.setReturnValue(battleStyle.getUnarmedAttackAnimations());
 		}
 	}
 }
