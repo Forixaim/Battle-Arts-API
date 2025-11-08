@@ -13,23 +13,17 @@ import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import yesman.epicfight.client.ClientEngine;
 
-@Mod.EventBusSubscriber(modid = BattleArtsAPI.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ClientEvents
+@Mod.EventBusSubscriber(modid = BattleArtsAPI.MOD_ID, value = Dist.CLIENT)
+public class ClientForgeEvents
 {
-	@SubscribeEvent
-	public static void onKeyRegister(RegisterKeyMappingsEvent event)
-	{
-		event.register(KeyBinds.USE_ART_1);
-		event.register(KeyBinds.USE_BURST_ART);
-		event.register(KeyBinds.USE_ULTIMATE_ART);
-		event.register(KeyBinds.USE_MANA_ART);
-	}
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent event)
+    {
+        if (Minecraft.getInstance().getOverlay() == null && Minecraft.getInstance().screen == null) {
+            InputHandler.handleKeybinds();
+        }
+    }
 
-	@SubscribeEvent
-	public static void onParticleReigster(RegisterParticleProvidersEvent event)
-	{
-		event.registerSpriteSet(ParticleRegistry.CHARGE_AURA.get(), ChargeAura.Provider::new);
-	}
+
 }

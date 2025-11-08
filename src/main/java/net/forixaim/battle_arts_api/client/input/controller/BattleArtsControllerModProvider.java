@@ -1,0 +1,63 @@
+package net.forixaim.battle_arts_api.client.input.controller;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import yesman.epicfight.api.client.input.controller.IEpicFightControllerMod;
+import yesman.epicfight.main.EpicFightMod;
+
+/**
+ * Provides access to the active {@link yesman.epicfight.api.client.input.controller.IEpicFightControllerMod} implementation.
+ * <p>
+ * Only one mod can register an implementation at a time. If multiple mods register, a warning is logged
+ * and the last one takes effect.
+ *
+ * @see yesman.epicfight.api.client.input.controller.IEpicFightControllerMod
+ */
+@ApiStatus.Experimental
+public final class BattleArtsControllerModProvider {
+    private BattleArtsControllerModProvider() {
+    }
+
+    @Nullable
+    @javax.annotation.Nullable
+    private static IBattleArtsControllerMod instance = null;
+
+    /**
+     * True if a mod other than Epic Fight has already registered an implementation
+     */
+    private static boolean overriddenByOtherMod;
+
+    /**
+     * Registers a controller mod implementation.
+     * Logs a warning if another mod has already registered.
+     */
+    public static void set(@NotNull String registrantModId, @NotNull IBattleArtsControllerMod modInstance) {
+        if (overriddenByOtherMod) {
+            EpicFightMod.LOGGER.warn(
+                    "Mod '{}' is overriding the Epic Fight controller implementation, which was already set by another mod. "
+                            + "Only the last registered implementation will be used. "
+                            + "This may occur if multiple controller mods are installed.",
+                    registrantModId
+            );
+        }
+        BattleArtsControllerModProvider.instance = modInstance;
+
+        if (registrantModId.equals(EpicFightMod.MODID)) {
+            EpicFightMod.LOGGER.info(
+                    "Epic Fight detected and registered supported controller mod: '{}'.",
+                    modInstance.getModName()
+            );
+        } else {
+            overriddenByOtherMod = true;
+        }
+    }
+
+    /**
+     * Returns the current controller implementation, or null if none
+     */
+    @Nullable
+    public static IBattleArtsControllerMod get() {
+        return BattleArtsControllerModProvider.instance;
+    }
+}
