@@ -30,7 +30,7 @@ public abstract class MixinEntity
 	private final Entity battle_arts$entity = (Entity) (Object)this;
 
 	@Inject(method = "walkingStepSound", at = @At("HEAD"), cancellable = true)
-	public void steppy(BlockPos pPos, BlockState pState, CallbackInfo ci)
+	public void step(BlockPos pPos, BlockState pState, CallbackInfo ci)
 	{
 		if (battle_arts$entity instanceof Player pl && EpicFightCapabilities.getEntityPatch(pl, PlayerPatch.class).isEpicFightMode() && Config.allowSoundOverrides)
 			ci.cancel();

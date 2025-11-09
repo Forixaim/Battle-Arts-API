@@ -5,6 +5,7 @@ import com.yesman.epicskills.client.gui.screen.CategorySlotTexture;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillCategories;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsTextures;
+import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleCategories;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleCategory;
 import net.forixaim.battle_arts_api.registry.ManaArtsDataKeys;
@@ -28,6 +29,8 @@ import yesman.epicfight.skill.SkillSlot;
 @Mod(BattleArtsAPI.MOD_ID)
 public class BattleArtsAPI
 {
+    //Local Debug Controls
+    public static final boolean debugMode = false;
     public static final String MOD_ID = "battlearts_api";
 
     public BattleArtsAPI(FMLJavaModLoadingContext context) {
@@ -37,6 +40,7 @@ public class BattleArtsAPI
             CategorySlotTexture.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsTextures.class);
         SkillCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillCategories.class);
         SkillSlot.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillSlots.class);
+        CoreAPIDataKeys.DATA_KEYS.register(modEventBus);
         ManaArtsDataKeys.DATA_KEYS.register(modEventBus);
         ParticleRegistry.PARTICLES.register(modEventBus);
 

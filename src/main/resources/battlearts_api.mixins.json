@@ -12,8 +12,8 @@
     "MixinWeaponInnateSkill"
   ],
   "client": [
-    "MixinControlEngine",
-    "MixinSkillbookRenderer"
+    "ControlEngineInvoker",
+    "MixinMCClient"
   ],
   "injectors": {
     "defaultRequire": 0

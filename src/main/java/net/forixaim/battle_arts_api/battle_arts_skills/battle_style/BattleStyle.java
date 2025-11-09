@@ -3,7 +3,11 @@ package net.forixaim.battle_arts_api.battle_arts_skills.battle_style;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.logging.LogUtils;
+import net.forixaim.battle_arts_api.BattleArtsAPI;
+import net.forixaim.battle_arts_api.Config;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillCategories;
+import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.forixaim.battle_arts_api.battle_arts_skills.passive.BattleStyleDependentPassive;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
@@ -30,6 +34,7 @@ import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.ParseUtil;
 import yesman.epicfight.client.gui.BattleModeGui;
+import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.server.SPChangeSkill;
 import yesman.epicfight.skill.*;
@@ -40,10 +45,7 @@ import yesman.epicfight.world.capabilities.item.WeaponCapability;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This class extends the skill class and is mainly there as a framework for the Battle Styles which can modify certain things.
@@ -83,6 +85,38 @@ public abstract class BattleStyle extends Skill
 
 	protected int proficiencyXpPerKill = 0;
 	protected float jumpBoostPower = 0.0F;
+
+    private static final ResourceLocation CONTAINER_TEX = ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/container.png");
+    private static final ResourceLocation OVERLAY_TEX   = ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/overlay.png");
+
+    private static final List<ResourceLocation> BARS = Lists.newArrayList(
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_meter_1.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_meter_2.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_meter_3.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_meter_4.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_meter_5.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_meter_6.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_meter_7.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_meter_8.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_meter_9.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_meter_10.png")
+    );
+
+    private static final List<ResourceLocation> METER_ICONS = Lists.newArrayList(
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_0.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_1.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_2.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_3.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_4.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_5.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_6.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_7.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_8.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_9.png"),
+            ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "textures/gui/meter/super_icon_10.png")
+    );
+
+    protected int maxMeter = 0;
 
 	//From 0.0 to 1.0
 	protected float criticalHitChance = 0.5F;
@@ -204,6 +238,11 @@ public abstract class BattleStyle extends Skill
 	public void setParams(CompoundTag parameters) {
 		super.setParams(parameters);
 
+        if (parameters.contains("max_meter"))
+        {
+            maxMeter = parameters.getInt("max_meter");
+        }
+
 		this.BattleStyleStatModifier.clear();
 		if (parameters.contains("attribute_modifiers")) {
 			ListTag attributeList = parameters.getList("attribute_modifiers", 10);
@@ -238,17 +277,15 @@ public abstract class BattleStyle extends Skill
 			if (!(spp.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
 				spp.modifyLivingMotionByCurrentItem(false);
 		}
-		for (Map.Entry<Attribute, AttributeModifier> stat : this.BattleStyleStatModifier.entrySet()) {
-			AttributeInstance attr = container.getExecutor().getOriginal().getAttribute(stat.getKey());
 
-			assert attr != null;
-			if (!attr.hasModifier(stat.getValue())) {
-				attr.addTransientModifier(stat.getValue());
-			}
-		}
+        BattleStyleStatModifier.forEach((attribute, attributeModifier) -> {
+                    if ((container.getExecutor().getOriginal().getAttribute(attribute) != null && Objects.requireNonNull(container.getExecutor().getOriginal().getAttribute(attribute)).hasModifier(attributeModifier))) {
+                        Objects.requireNonNull(container.getExecutor().getOriginal().getAttribute(attribute)).addTransientModifier(attributeModifier);
+                    }
+                }
+        );
 		container.getExecutor().getEventListener().addEventListener(PlayerEventListener.EventType.DEAL_DAMAGE_EVENT_HURT, UNIVERSAL_BATTLE_STYLE_UUID, event ->
 		{
-			//Generate a number between 0 inclusive and 1 inclusive
 			float random = container.getExecutor().getOriginal().getRandom().nextFloat();
 			CriticalHitEvent crit = ForgeHooks.getCriticalHit(event.getPlayerPatch().getOriginal(), event.getTarget(), false, random <= criticalHitChance ? 1 + getCriticalHitDamage() : 1.0f);
 			if (crit != null)
@@ -259,7 +296,15 @@ public abstract class BattleStyle extends Skill
 		});
 	}
 
-	private void removeBattleStyleDependentSkills(ServerPlayerPatch playerPatch)
+    @Override
+    public boolean shouldDraw(SkillContainer container)
+    {
+
+        return this.maxMeter > 0;
+    }
+
+
+    private void removeBattleStyleDependentSkills(ServerPlayerPatch playerPatch)
 	{
 		EpicFightNetworkManager.PayloadBundleBuilder toLocal = EpicFightNetworkManager.PayloadBundleBuilder.create();
 
@@ -285,30 +330,62 @@ public abstract class BattleStyle extends Skill
 			removeBattleStyleDependentSkills(spp);
 		}
 
-		for (Map.Entry<Attribute, AttributeModifier> stat : this.BattleStyleStatModifier.entrySet()) {
-			AttributeInstance attr = container.getExecutor().getOriginal().getAttribute(stat.getKey());
+        BattleStyleStatModifier.forEach((attribute, attributeModifier) -> {
+                    if ((container.getExecutor().getOriginal().getAttribute(attribute) != null && Objects.requireNonNull(container.getExecutor().getOriginal().getAttribute(attribute)).hasModifier(attributeModifier))) {
+                        Objects.requireNonNull(container.getExecutor().getOriginal().getAttribute(attribute)).removeModifier(attributeModifier);
+                    }
+                }
+        );
 
-			assert attr != null;
-			if (attr.hasModifier(stat.getValue())) {
-				attr.removeModifier(stat.getValue());
-			}
-		}
 	}
 
 	public Set<Map.Entry<Attribute, AttributeModifier>> getModfierEntry() {
 		return this.BattleStyleStatModifier.entrySet();
 	}
 
-	@OnlyIn(Dist.CLIENT)
+    @Override
+    public void updateContainer(SkillContainer container) {
+        super.updateContainer(container);
+        if (BattleArtsAPI.debugMode && container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get()) < (maxMeter * 100) && !container.getExecutor().isLogicalClient()) {
+            container.getDataManager().setDataSyncF(CoreAPIDataKeys.METER_FILL.get(), data -> data + 1);
+        }
+        if (container.getExecutor() instanceof LocalPlayerPatch localPlayerPatch && localPlayerPatch.isTargetLockedOn())
+        {
+            container.getDataManager().setDataSync(CoreAPIDataKeys.COMBAT_COOLDOWN.get(), 50);
+        }
+        else
+        {
+            container.getDataManager().setDataSyncF(CoreAPIDataKeys.COMBAT_COOLDOWN.get(), data -> data - 1);
+        }
+    }
+
+    public int getMaxMeter() {
+        return maxMeter;
+    }
+
+    @OnlyIn(Dist.CLIENT)
 	@Override
 	public void drawOnGui(BattleModeGui gui, SkillContainer container, GuiGraphics guiGraphics, float x, float y, float pt) {
-		PoseStack poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		poseStack.translate(0, (float)gui.getSlidingProgression(), 0);
-		guiGraphics.blit(this.getSkillTexture(), (int)x, (int)y, 24, 24, 0, 0, 1, 1, 1, 1);
-		String remainTime = String.format("%.0f", container.getMaxResource() - container.getResource());
-		guiGraphics.drawString(gui.getFont(), remainTime, x + 12 - 4 * remainTime.length(), (y+6), 16777215, true);
-		poseStack.popPose();
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+        float meterLevel = container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get());
+        poseStack.translate(Config.superMeterPositionX, Config.superMeterPositionY, 0);
+        poseStack.scale((float) Config.superMeterScaleX, (float) Config.superMeterScaleY, 1f);
+        guiGraphics.blit(CONTAINER_TEX, (int)x, (int)y, 0, 0, 128, 8, 128, 8);
+        for (int i = Math.max(0, (int) meterLevel / 100 - 1); i < (int) meterLevel / 100 && i < 10; i++) {
+            ResourceLocation tex = BARS.get(Math.min(i, BARS.size() - 1));
+            guiGraphics.blit(tex, (int) x, (int) y, 0, 0, 128, 8, 128, 8);
+        }
+        if (meterLevel / 100 < BARS.size() && meterLevel % 100 > 0) {
+            float percent = (int)meterLevel % 100 / (float)100;
+            int filledWidth = (int)(128 * percent);
+            ResourceLocation tex = BARS.get((int) Math.min(meterLevel / 100, BARS.size() - 1));
+            guiGraphics.blit(tex, (int) (x), (int) y, 0, 0, filledWidth, 8,  filledWidth, 8);
+        }
+        guiGraphics.blit(OVERLAY_TEX, (int) x, (int) y, 0, 0, 128, 8, 128, 8);
+        int iconIndex = (int) ((meterLevel / 100) % METER_ICONS.size());
+        guiGraphics.blit(METER_ICONS.get(iconIndex), (int) x - 32, (int) y - 12, 0, 0, 32, 32, 32, 32);
+        poseStack.popPose();
 	}
 
     public float[] getInnateSkillColor() {

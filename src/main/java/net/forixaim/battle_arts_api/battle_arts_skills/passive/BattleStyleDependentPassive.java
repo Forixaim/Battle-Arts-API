@@ -65,7 +65,6 @@ public class BattleStyleDependentPassive extends PassiveSkill
 		this.consumption = parameters.getFloat("consumption");
 		this.maxDuration = parameters.getInt("max_duration");
 		this.maxStackSize = parameters.contains("max_stacks") ? parameters.getInt("max_stacks") : 1;
-		this.requiredXp = parameters.getInt("xp_requirement");
 		this.attributes.clear();
 		if (parameters.contains("attribute_modifiers")) {
 			ListTag attributeList = parameters.getList("attribute_modifiers", 10);
