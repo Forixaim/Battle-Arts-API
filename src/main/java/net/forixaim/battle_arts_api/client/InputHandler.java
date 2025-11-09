@@ -26,7 +26,7 @@ public class InputHandler
                     handleExecute(BattleArtsSkillSlots.COMBAT_ART);
                 }
                 else if (KeyBinds.USE_MANA_ART.consumeClick()) {
-                    handleExecute(BattleArtsSkillSlots.MANA_ART);
+                    handleExecute(BattleArtsSkillSlots.SPECIAL_ART);
                 }
                 else if (KeyBinds.USE_BURST_ART.consumeClick()) {
                     handleExecute(BattleArtsSkillSlots.BURST_ART);
@@ -39,7 +39,7 @@ public class InputHandler
             else
             {
                 InputManager.castActiveSkill(BattleArtsInputActions.COMBAT_ART, true, BattleArtsSkillSlots.COMBAT_ART, localPlayerPatch);
-                InputManager.castActiveSkill(BattleArtsInputActions.MANA_ART, true, BattleArtsSkillSlots.MANA_ART, localPlayerPatch);
+                InputManager.castActiveSkill(BattleArtsInputActions.MANA_ART, true, BattleArtsSkillSlots.SPECIAL_ART, localPlayerPatch);
                 InputManager.castActiveSkill(BattleArtsInputActions.BURST_ART, true, BattleArtsSkillSlots.BURST_ART, localPlayerPatch);
                 InputManager.castActiveSkill(BattleArtsInputActions.ULTIMATE_ART, true, BattleArtsSkillSlots.ULTIMATE_ART, localPlayerPatch);
             }

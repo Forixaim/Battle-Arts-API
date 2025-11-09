@@ -7,7 +7,7 @@ public enum BattleArtsSkillSlots implements SkillSlot
 {
 	BATTLE_STYLE(BattleArtsSkillCategories.BATTLE_STYLE),
 	COMBAT_ART(BattleArtsSkillCategories.COMBAT_ART),
-	MANA_ART(BattleArtsSkillCategories.MANA_ART),
+	SPECIAL_ART(BattleArtsSkillCategories.SPECIAL_ART),
 	BURST_ART(BattleArtsSkillCategories.BURST_ART),
 	ULTIMATE_ART(BattleArtsSkillCategories.ULTIMATE_ART);
 	final SkillCategory category;
