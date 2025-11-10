@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.EntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 @Mixin(Entity.class)
@@ -32,7 +33,7 @@ public abstract class MixinEntity
 	@Inject(method = "walkingStepSound", at = @At("HEAD"), cancellable = true)
 	public void step(BlockPos pPos, BlockState pState, CallbackInfo ci)
 	{
-		if (battle_arts$entity instanceof Player pl && EpicFightCapabilities.getEntityPatch(pl, PlayerPatch.class).isEpicFightMode() && Config.allowSoundOverrides)
+		if (Config.allowSoundOverrides && battle_arts$entity instanceof Player pl && EpicFightCapabilities.getEntityPatch(pl, LivingEntityPatch.class) instanceof PlayerPatch<?> playerPatch && playerPatch.isEpicFightMode())
 			ci.cancel();
 	}
 

@@ -60,11 +60,6 @@ public abstract class BattleStyle extends Skill
 		return (new Builder<>().setCategory(BattleArtsSkillCategories.BATTLE_STYLE).setResource(Resource.NONE));
 	}
 
-	public SkillDataKey<Boolean> getSneakIsDisabledKey()
-	{
-		return null;
-	}
-
 	/**
 	 * This array sets the innate skill color of a battle style.
 	 * It must be of size 3 with a float value between 0 and 1

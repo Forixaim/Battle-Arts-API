@@ -6,7 +6,6 @@
   "refmap": "battlearts_api.refmap.json",
   "mixins": [
     "MixinCapabilityItem",
-    "MixinEnchant",
     "MixinEntity",
     "MixinPlayerCritical",
     "MixinWeaponInnateSkill"
