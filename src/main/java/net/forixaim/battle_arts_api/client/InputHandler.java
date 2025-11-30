@@ -1,10 +1,10 @@
 package net.forixaim.battle_arts_api.client;
 
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillSlots;
-import net.forixaim.battle_arts_api.client.input.action.BattleArtsInputActions;
-import net.forixaim.battle_arts_api.client.input.handlers.InputManager;
+import net.forixaim.battle_arts_api.client.input.action.BattleArtsInputAction;
 import net.forixaim.battle_arts_api.mixin.ControlEngineInvoker;
 import net.minecraft.client.Minecraft;
+import yesman.epicfight.api.client.input.InputManager;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.skill.SkillContainer;
@@ -22,26 +22,21 @@ public class InputHandler
         {
             if (simpleInput)
             {
-                if (KeyBinds.USE_ART_1.consumeClick()) {
-                    handleExecute(BattleArtsSkillSlots.COMBAT_ART);
-                }
-                else if (KeyBinds.USE_MANA_ART.consumeClick()) {
-                    handleExecute(BattleArtsSkillSlots.SPECIAL_ART);
-                }
-                else if (KeyBinds.USE_BURST_ART.consumeClick()) {
-                    handleExecute(BattleArtsSkillSlots.BURST_ART);
-                }
-                else if (KeyBinds.USE_ULTIMATE_ART.consumeClick()) {
-                    handleExecute(BattleArtsSkillSlots.ULTIMATE_ART);
-                }
+                InputManager.triggerOnPress(BattleArtsInputAction.COMBAT_ART, () -> handleExecute(BattleArtsSkillSlots.COMBAT_ART));
+
+                InputManager.triggerOnPress(BattleArtsInputAction.MANA_ART, () -> handleExecute(BattleArtsSkillSlots.SPECIAL_ART));
+
+                InputManager.triggerOnPress(BattleArtsInputAction.BURST_ART, () -> handleExecute(BattleArtsSkillSlots.BURST_ART));
+
+                InputManager.triggerOnPress(BattleArtsInputAction.ULTIMATE_ART, () -> handleExecute(BattleArtsSkillSlots.ULTIMATE_ART));
 
             }
             else
             {
-                InputManager.castActiveSkill(BattleArtsInputActions.COMBAT_ART, true, BattleArtsSkillSlots.COMBAT_ART, localPlayerPatch);
-                InputManager.castActiveSkill(BattleArtsInputActions.MANA_ART, true, BattleArtsSkillSlots.SPECIAL_ART, localPlayerPatch);
-                InputManager.castActiveSkill(BattleArtsInputActions.BURST_ART, true, BattleArtsSkillSlots.BURST_ART, localPlayerPatch);
-                InputManager.castActiveSkill(BattleArtsInputActions.ULTIMATE_ART, true, BattleArtsSkillSlots.ULTIMATE_ART, localPlayerPatch);
+                castActiveSkill(BattleArtsInputAction.COMBAT_ART, BattleArtsSkillSlots.COMBAT_ART, localPlayerPatch);
+                castActiveSkill(BattleArtsInputAction.MANA_ART, BattleArtsSkillSlots.SPECIAL_ART, localPlayerPatch);
+                castActiveSkill(BattleArtsInputAction.BURST_ART, BattleArtsSkillSlots.BURST_ART, localPlayerPatch);
+                castActiveSkill(BattleArtsInputAction.ULTIMATE_ART, BattleArtsSkillSlots.ULTIMATE_ART, localPlayerPatch);
             }
 
         }
@@ -52,7 +47,17 @@ public class InputHandler
         SkillContainer activeSlot = localPlayerPatch.getSkill(skillSlotConsumer);
         if (activeSlot.sendCastRequest(localPlayerPatch, ClientEngine.getInstance().controlEngine).shouldReserveKey())
         {
-            ((ControlEngineInvoker)ClientEngine.getInstance().controlEngine).invokeReserveKey(activeSlot.getSlot(), BattleArtsInputActions.COMBAT_ART.keyMapping());
+            ((ControlEngineInvoker)ClientEngine.getInstance().controlEngine).invokeReserveKey(activeSlot.getSlot(), BattleArtsInputAction.COMBAT_ART.keyMapping());
         }
+    }
+
+    private static void castActiveSkill(BattleArtsInputAction action, SkillSlot skillSlotConsumer, LocalPlayerPatch localPlayerPatch) {
+        Runnable castActiveSkill = () -> {
+            SkillContainer activeSlot = localPlayerPatch.getSkill(skillSlotConsumer);
+            if (activeSlot.sendCastRequest(localPlayerPatch, ClientEngine.getInstance().controlEngine).shouldReserveKey()) {
+                ((ControlEngineInvoker) ClientEngine.getInstance().controlEngine).invokeReserveKey(activeSlot.getSlot(), BattleArtsInputAction.COMBAT_ART.keyMapping());
+            }
+        };
+        InputManager.triggerOnPress(action, castActiveSkill);
     }
 }
