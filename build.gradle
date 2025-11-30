@@ -112,11 +112,16 @@ repositories {
     flatDir {
          dir 'libs'
     }
+    exclusiveContent {
+        forRepository { maven { name = "Modrinth"; url = "https://api.modrinth.com/maven" } }
+        forRepositories(fg.repository)
+        filter { includeGroup "maven.modrinth" }
+    }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("curse.maven:epic-fight-mod-405076:7173243")
+    implementation fg.deobf("modrinth.maven:epic-fight:20.14.0")
     //implementation fg.deobf("curse.maven:project-mmo-353935:6142256")
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.2')
     implementation fg.deobf("curse.maven:epic-fight-skill-tree-1295882:6854381")

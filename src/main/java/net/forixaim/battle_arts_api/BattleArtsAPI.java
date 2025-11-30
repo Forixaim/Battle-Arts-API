@@ -2,23 +2,24 @@ package net.forixaim.battle_arts_api;
 
 import com.yesman.epicskills.EpicSkills;
 import com.yesman.epicskills.client.gui.screen.CategorySlotTexture;
-import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillCategories;
+import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsTextures;
 import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleCategories;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleCategory;
+import net.forixaim.battle_arts_api.client.input.action.BattleArtsInputAction;
 import net.forixaim.battle_arts_api.registry.ManaArtsDataKeys;
 import net.forixaim.battle_arts_api.registry.ParticleRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import yesman.epicfight.api.client.input.action.InputAction;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
 
@@ -43,15 +44,12 @@ public class BattleArtsAPI
         CoreAPIDataKeys.DATA_KEYS.register(modEventBus);
         ManaArtsDataKeys.DATA_KEYS.register(modEventBus);
         ParticleRegistry.PARTICLES.register(modEventBus);
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            InputAction.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsInputAction.class);
+        }
 
         MinecraftForge.EVENT_BUS.register(this);
-        modEventBus.addListener(this::addCreative);
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-    }
-
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
     }
 
 }
