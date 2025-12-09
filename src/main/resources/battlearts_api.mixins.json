@@ -12,7 +12,6 @@
   ],
   "client": [
     "ControlEngineInvoker",
-    "MixinMCClient"
   ],
   "injectors": {
     "defaultRequire": 0
