@@ -1,5 +1,6 @@
 package net.forixaim.battle_arts_api.mixin;
 
+import com.mojang.logging.LogUtils;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyle;
 import net.minecraft.world.InteractionHand;
@@ -22,9 +23,7 @@ import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.server.SPChangeSkill;
 import yesman.epicfight.network.server.SPSetRemotePlayerSkill;
 import yesman.epicfight.network.server.SPSetSkillContainerValue;
-import yesman.epicfight.skill.Skill;
-import yesman.epicfight.skill.SkillContainer;
-import yesman.epicfight.skill.SkillSlots;
+import yesman.epicfight.skill.*;
 import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -39,9 +38,6 @@ import java.util.Map;
 public abstract class MixinCapabilityItem
 {
 	@Shadow public abstract Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> getLivingMotionModifier(LivingEntityPatch<?> playerpatch, InteractionHand hand);
-
-	@Unique
-	private final CapabilityItem battleArtsAPI$inst = (CapabilityItem) (Object) this;
 
 	@Inject(method = "getLivingMotionModifier", at = @At("HEAD"), remap = false, cancellable = true)
 	public void getLivingMotionModifierEX(LivingEntityPatch<?> entityPatch, InteractionHand hand, final CallbackInfoReturnable<Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>>> cir)
@@ -63,60 +59,22 @@ public abstract class MixinCapabilityItem
 		{
 			if (style.getGuardMaps() != null && !style.getGuardMaps().isEmpty() && style.getGuardMaps().get(skill) != null &&!style.getGuardMaps().get(skill).isEmpty() && style.getGuardMaps().get(skill).containsKey(blockType))
 			{
-				cir.setReturnValue(style.getGuardMaps().get(skill).get(blockType));
+                List<AnimationManager.AnimationAccessor<? extends StaticAnimation>> animations = style.getGuardMaps().get(skill).get(blockType);
+                SkillDataManager dataManager = playerpatch.getSkill(skill).getDataManager();
+                LogUtils.getLogger().debug("Animations: {}", animations);
+
+                if (animations != null && !animations.isEmpty())
+                {
+                    if (dataManager.hasData(SkillDataKeys.PARRY_MOTION_COUNTER.get()) && blockType == GuardSkill.BlockType.ADVANCED_GUARD)
+                    {
+                        int motionCounter = dataManager.getDataValue(SkillDataKeys.PARRY_MOTION_COUNTER.get());
+                        dataManager.setDataF(SkillDataKeys.PARRY_MOTION_COUNTER.get(), (v) -> v + 1);
+                        motionCounter %= animations.size();
+                        cir.setReturnValue(animations.get(motionCounter));
+                    }
+                    cir.setReturnValue(animations.get(playerpatch.getOriginal().getRandom().nextInt(animations.size())));
+                }
 			}
-		}
-	}
-
-	@Inject(method = "changeWeaponInnateSkill", at = @At("RETURN"), remap = false)
-	public void changeWeaponInnate(PlayerPatch<?> playerPatch, ItemStack itemstack, CallbackInfo ci)
-	{
-		EpicFightNetworkManager.PayloadBundleBuilder toLocal = EpicFightNetworkManager.PayloadBundleBuilder.create();
-		EpicFightNetworkManager.PayloadBundleBuilder toRemote = EpicFightNetworkManager.PayloadBundleBuilder.create();
-		if (!(playerPatch.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability) && playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle bs && bs.unarmedMoveset())
-		{
-			Skill weaponInnateSkill = null;
-			Skill skill = null;
-			if (!playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).isEmpty() && playerPatch.getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getSkill() instanceof BattleStyle battleStyle)
-			{
-				weaponInnateSkill = battleStyle.getUnarmedInnateSkill();
-				skill = battleStyle.getUnarmedPassiveSkill();
-			}
-
-			if (bs.modifiesUnarmedLMs() && !playerPatch.isLogicalClient())
-			{
-				((ServerPlayerPatch) playerPatch).modifyLivingMotionByCurrentItem();
-			}
-
-            SkillContainer weaponInnateSkillContainer = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
-			if (weaponInnateSkill != null)
-			{
-				if (weaponInnateSkillContainer.getSkill() != weaponInnateSkill)
-				{
-					weaponInnateSkillContainer.setSkill(weaponInnateSkill);
-				}
-				toLocal.and(new SPChangeSkill(SkillSlots.WEAPON_INNATE, playerPatch.getOriginal().getId(), weaponInnateSkill));
-			}
-			else
-			{
-				toLocal.and(SPSetSkillContainerValue.enable(SkillSlots.WEAPON_INNATE, false, playerPatch.getOriginal().getId()));
-			}
-
-
-			weaponInnateSkillContainer.setDisabled(weaponInnateSkill == null);
-			toRemote.and(new SPSetRemotePlayerSkill(playerPatch.getOriginal().getId(), SkillSlots.WEAPON_INNATE, weaponInnateSkill));
-
-
-			SkillContainer passiveSkillContainer = playerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
-			if (skill != null) {
-				if (passiveSkillContainer.getSkill() != skill) {
-					passiveSkillContainer.setSkill(skill);
-					toLocal.and(new SPChangeSkill(SkillSlots.WEAPON_PASSIVE, playerPatch.getOriginal().getId(), skill));
-					toRemote.and(new SPSetRemotePlayerSkill(playerPatch.getOriginal().getId(), SkillSlots.WEAPON_PASSIVE, skill));				}
-			} else {
-				passiveSkillContainer.setSkill(null);
-				toLocal.and(new SPChangeSkill(SkillSlots.WEAPON_PASSIVE, playerPatch.getOriginal().getId(), null));
-				toRemote.and(new SPSetRemotePlayerSkill(playerPatch.getOriginal().getId(), SkillSlots.WEAPON_PASSIVE, skill));			}
 		}
 	}
 }

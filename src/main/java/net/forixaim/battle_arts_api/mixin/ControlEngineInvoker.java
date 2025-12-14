@@ -9,6 +9,6 @@ import yesman.epicfight.skill.SkillSlot;
 @Mixin(ControlEngine.class)
 public interface ControlEngineInvoker
 {
-    @Invoker("reserveKey")
+    @Invoker(value = "reserveKey", remap = false)
     void invokeReserveKey(SkillSlot slot, KeyMapping keyMapping);
 }

@@ -124,7 +124,7 @@ public abstract class BattleStyle extends Skill
 	protected List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> unarmedAttackAnimations;
 	protected Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> unarmedLivingMotions;
 	protected Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> unarmedBattleMotions;
-	protected Map<GuardSkill, Map<GuardSkill.BlockType, AnimationManager.AnimationAccessor<? extends StaticAnimation>>> guardMaps;
+	protected Map<GuardSkill, Map<GuardSkill.BlockType, List<AnimationManager.AnimationAccessor<? extends StaticAnimation>>>> guardMaps;
 	protected Skill unarmedInnateSkill;
 	protected Skill unarmedPassiveSkill;
 	protected final List<Skill> dependentSkills;
@@ -166,7 +166,7 @@ public abstract class BattleStyle extends Skill
 		return unarmedInnateSkill;
 	}
 
-	public Map<GuardSkill, Map<GuardSkill.BlockType, AnimationManager.AnimationAccessor<? extends StaticAnimation>>> getGuardMaps() {
+	public Map<GuardSkill, Map<GuardSkill.BlockType, List<AnimationManager.AnimationAccessor<? extends StaticAnimation>>>> getGuardMaps() {
 		return guardMaps;
 	}
 
@@ -343,14 +343,6 @@ public abstract class BattleStyle extends Skill
         super.updateContainer(container);
         if (BattleArtsAPI.debugMode && container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get()) < (maxMeter * 100) && !container.getExecutor().isLogicalClient()) {
             container.getDataManager().setDataSyncF(CoreAPIDataKeys.METER_FILL.get(), data -> data + 1);
-        }
-        if (container.getExecutor() instanceof LocalPlayerPatch localPlayerPatch && localPlayerPatch.isTargetLockedOn())
-        {
-            container.getDataManager().setDataSync(CoreAPIDataKeys.COMBAT_COOLDOWN.get(), 50);
-        }
-        else
-        {
-            container.getDataManager().setDataSyncF(CoreAPIDataKeys.COMBAT_COOLDOWN.get(), data -> data - 1);
         }
     }
 
