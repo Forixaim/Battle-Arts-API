@@ -2,6 +2,11 @@ package net.forixaim.battle_arts_api.battle_arts_skills;
 
 import com.yesman.epicskills.client.gui.screen.CategorySlotTexture;
 
+/**
+ * Category Slot Textures for Epic Fight's Skill Tree Mod
+ * @since 20.10.7.17
+ * @author Forixaim
+ */
 public enum BattleArtsTextures implements CategorySlotTexture
 {
     BATTLE_STYLE(6, 6, 44, 44),

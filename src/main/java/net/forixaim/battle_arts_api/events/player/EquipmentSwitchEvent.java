@@ -5,6 +5,11 @@ import net.minecraft.world.item.ItemStack;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.AbstractPlayerEvent;
 
+/**
+ * Event fired when a player switches equipment in a specific slot.
+ * @param <T> ServerPlayerPatch
+ * @author Forixaim
+ */
 public class EquipmentSwitchEvent<T extends PlayerPatch<?>> extends AbstractPlayerEvent<T> {
     private final ItemStack previousItem;
     private final ItemStack newItem;

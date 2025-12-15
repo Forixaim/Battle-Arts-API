@@ -6,10 +6,11 @@ import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
 
+
 public abstract class SpecialArt extends Skill
 {
 
-    public static SkillBuilder<? extends Skill> createManaArtBuilder()
+    public static SkillBuilder<? extends Skill> createSpecialArtBuilder()
     {
         return Skill.createBuilder().setCategory(BattleArtsSkillCategories.SPECIAL_ART);
     }

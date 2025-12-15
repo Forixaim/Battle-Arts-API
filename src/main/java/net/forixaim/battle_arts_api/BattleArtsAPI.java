@@ -1,5 +1,6 @@
 package net.forixaim.battle_arts_api;
 
+import com.mojang.logging.LogUtils;
 import com.yesman.epicskills.EpicSkills;
 import com.yesman.epicskills.client.gui.screen.CategorySlotTexture;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillCategories;
@@ -9,8 +10,7 @@ import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleCategories;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleCategory;
 import net.forixaim.battle_arts_api.client.input.action.BattleArtsInputAction;
-import net.forixaim.battle_arts_api.registry.ManaArtsDataKeys;
-import net.forixaim.battle_arts_api.registry.ParticleRegistry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -19,12 +19,13 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import org.slf4j.Logger;
 import yesman.epicfight.api.client.input.action.InputAction;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
 
 /**
- * This is the Battle Arts API used for memes and funnies.
+ * <p>This is the Battle Arts API used for almost every Battle Arts Suite of mods</p>
  * @author Forixaim
  */
 @Mod(BattleArtsAPI.MOD_ID)
@@ -33,23 +34,38 @@ public class BattleArtsAPI
     //Local Debug Controls
     public static final boolean debugMode = false;
     public static final String MOD_ID = "battlearts_api";
+    public static final Logger LOGGER = LogUtils.getLogger();
+
+    public static ResourceLocation identifier(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    }
 
     public BattleArtsAPI(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
-        BattleStyleCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleStyleCategories.class);
-        if (ModList.get().isLoaded(EpicSkills.MODID) && FMLEnvironment.dist == Dist.CLIENT)
-            CategorySlotTexture.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsTextures.class);
-        SkillCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillCategories.class);
-        SkillSlot.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillSlots.class);
-        CoreAPIDataKeys.DATA_KEYS.register(modEventBus);
-        ManaArtsDataKeys.DATA_KEYS.register(modEventBus);
-        ParticleRegistry.PARTICLES.register(modEventBus);
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            InputAction.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsInputAction.class);
-        }
-
+        registerEnums();
+        registerRegistries(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
+    public void registerEnums()
+    {
+        BattleStyleCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleStyleCategories.class);
+        SkillCategory.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillCategories.class);
+        SkillSlot.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsSkillSlots.class);
+
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            if (ModList.get().isLoaded(EpicSkills.MODID))
+            {
+                CategorySlotTexture.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsTextures.class);
+            }
+            InputAction.ENUM_MANAGER.registerEnumCls(MOD_ID, BattleArtsInputAction.class);
+        }
+    }
+
+    public void registerRegistries(IEventBus modEventBus)
+    {
+        CoreAPIDataKeys.DATA_KEYS.register(modEventBus);
+
+    }
 }

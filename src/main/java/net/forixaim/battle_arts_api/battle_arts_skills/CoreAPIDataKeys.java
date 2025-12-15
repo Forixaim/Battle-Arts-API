@@ -9,10 +9,13 @@ import yesman.epicfight.api.utils.PacketBufferCodec;
 import yesman.epicfight.skill.SkillDataKey;
 import yesman.epicfight.skill.SkillDataKeys;
 
+/**
+ * Core data keys provided by the Battle Arts API.
+ * @author Forixaim
+ */
 public class CoreAPIDataKeys
 {
     public static final DeferredRegister<SkillDataKey<?>> DATA_KEYS = DeferredRegister.create(SkillDataKeys.DATA_KEYS.getRegistryKey(), BattleArtsAPI.MOD_ID);
-    public static final RegistryObject<SkillDataKey<Integer>> COMBAT_COOLDOWN = DATA_KEYS.register("combat_cooldown", () -> SkillDataKey.createSkillDataKey(PacketBufferCodec.INTEGER, 0, true, BattleStyle.class));
 
     public static final RegistryObject<SkillDataKey<Float>> METER_FILL = DATA_KEYS.register("meter_fill", () -> SkillDataKey.createSkillDataKey(PacketBufferCodec.FLOAT, 0.0f, true, ActiveSkill.class, BattleStyle.class));
 }

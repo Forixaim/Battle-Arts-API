@@ -3,6 +3,12 @@ package net.forixaim.battle_arts_api.battle_arts_skills;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
 
+/**
+ * Additional skill slots for the Battle Arts API.
+ * @see SkillSlot
+ * @see BattleArtsSkillCategories
+ * @author Forixaim
+ */
 public enum BattleArtsSkillSlots implements SkillSlot
 {
 	BATTLE_STYLE(BattleArtsSkillCategories.BATTLE_STYLE),

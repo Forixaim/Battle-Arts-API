@@ -4,9 +4,14 @@ import net.forixaim.battle_arts_api.BattleArtsAPI;
 import net.minecraft.resources.ResourceLocation;
 import yesman.epicfight.skill.SkillCategory;
 
+/**
+ * Enum representing different categories of battle arts skills.
+ * @see SkillCategory
+ * @author Forixaim
+ */
 public enum BattleArtsSkillCategories implements SkillCategory
 {
-	BATTLE_STYLE(true, true, true, ResourceLocation.fromNamespaceAndPath(BattleArtsAPI.MOD_ID, "skillbook_battle_style")),
+	BATTLE_STYLE(true, true, true, BattleArtsAPI.identifier("skillbook_battle_style")),
 	SPECIAL_ART(true, true, true),
 	COMBAT_ART(true, true, false),
 	BURST_ART(true, true, false),
