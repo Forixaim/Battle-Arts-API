@@ -1,32 +1,24 @@
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
-}
-
 plugins {
     id 'eclipse'
     id 'idea'
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    id("org.spongepowered.mixin") version("0.7-SNAPSHOT")
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id("me.modmuss50.mod-publish-plugin") version "1.1.0"
+    id("dev.echoellet.mc-safe-resources") version("0.0.2")
 }
-
-apply plugin: 'org.spongepowered.mixin'
 
 group = mod_group_id
 version = mod_version
 
 base {
     archivesName = mod_id
+    version = getFullModVersion()
 }
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
+    withSourcesJar()
 }
 
 minecraft {
@@ -175,4 +167,61 @@ tasks.named('jar', Jar).configure {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+mcSafeResources {
+    namespace.set(mod_id)
+}
+
+java.sourceSets.main.java.srcDirs(
+        tasks.generateLangKeys.outputs.files.singleFile,
+        tasks.generateSoundKeys.outputs.files.singleFile
+)
+
+tasks.compileJava.dependsOn(tasks.generateLangKeys, tasks.generateSoundKeys)
+
+def getFullModVersion() {
+    return "${mod_version}-mc${minecraft_version}-forge"
+}
+
+publishMods {
+    def changelogFile = project.file("CHANGELOG.md")
+    def changelogText = changelogFile.text
+
+    changelog = """
+|**Tested against:**
+|- **Forge:** ${forge_version}
+|- **Minecraft:** ${minecraft_version}
+|- **Epic Fight:** ${epicfight_version}
+|
+|${changelogText}
+""".stripMargin().trim()
+
+    modLoaders.add("forge")
+    type.set(STABLE)
+    displayName.set(getFullModVersion())
+    file.set(tasks.jar.archiveFile)
+    additionalFiles.from(sourcesJar)
+
+    curseforge {
+        accessToken.set(providers.environmentVariable("CURSEFORGE_API_KEY"))
+        projectId.set("1091499")
+        minecraftVersions.add(minecraft_version)
+        projectSlug.set("battle-arts-api")
+
+        requires("epic-fight-mod")
+    }
+
+    modrinth {
+        accessToken.set(providers.environmentVariable("MODRINTH_API_KEY"))
+        projectId.set("7baP43pD")
+        minecraftVersions.add(minecraft_version)
+
+        requires("epic-fight")
+
+        // Syncs the GitHub README with the Modrinth project description
+//        projectDescription.set(
+//                providers.fileContents(layout.projectDirectory.file("README.md")).asText
+//        )
+    }
 }
