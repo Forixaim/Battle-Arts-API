@@ -148,6 +148,7 @@ val generateModMetadata by tasks.registering(ProcessResources::class) {
     val replaceProperties = mapOf(
         "minecraft_version_range" to gradleProperty("minecraft_version_range"),
         "loader_version_range" to gradleProperty("loader_version_range"),
+        "neo_version" to gradleProperty("neo_version"),
         "mod_id" to modId,
         "mod_version" to modVersion,
         "mod_license" to gradleProperty("mod_license"),
@@ -157,7 +158,7 @@ val generateModMetadata by tasks.registering(ProcessResources::class) {
     )
     inputs.properties(replaceProperties)
     expand(replaceProperties)
-    from("src/main/templates")
+    from("src/main/resources/META-INF/neoforge.mods.toml")
     into("build/generated/sources/modMetadata")
 }
 

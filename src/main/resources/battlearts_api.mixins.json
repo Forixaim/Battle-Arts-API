@@ -1,9 +1,7 @@
 {
   "required": true,
-  "minVersion": "0.8",
   "package": "net.forixaim.battle_arts_api.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "refmap": "battlearts_api.refmap.json",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
     "MixinCapabilityItem",
     "MixinEntity",
@@ -13,6 +11,9 @@
     "ControlEngineInvoker"
   ],
   "injectors": {
-    "defaultRequire": 0
-	}
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
 }
