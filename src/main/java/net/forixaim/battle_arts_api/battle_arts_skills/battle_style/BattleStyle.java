@@ -8,6 +8,7 @@ import net.forixaim.battle_arts_api.Config;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillCategories;
 import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -17,18 +18,20 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.event.entity.player.CriticalHitEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.ParseUtil;
 import yesman.epicfight.client.gui.BattleModeGui;
-import yesman.epicfight.skill.*;
+import yesman.epicfight.skill.Skill;
+import yesman.epicfight.skill.SkillBuilder;
+import yesman.epicfight.skill.SkillCategory;
+import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
@@ -138,7 +141,7 @@ public abstract class BattleStyle extends Skill
 			for (Tag tag : attributeList) {
 				CompoundTag comp = (CompoundTag)tag;
 				String attribute = comp.getString("attribute");
-				Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.parse(attribute));
+				Attribute attr = BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.parse(attribute));
 				AttributeModifier modifier = ParseUtil.toAttributeModifier(comp);
 
 				this.BattleStyleStatModifier.put(attr, modifier);
@@ -175,7 +178,7 @@ public abstract class BattleStyle extends Skill
 		container.getExecutor().getEventListener().addEventListener(PlayerEventListener.EventType.DEAL_DAMAGE_EVENT_HURT, UNIVERSAL_BATTLE_STYLE_UUID, event ->
 		{
 			float random = container.getExecutor().getOriginal().getRandom().nextFloat();
-			CriticalHitEvent crit = ForgeHooks.getCriticalHit(event.getPlayerPatch().getOriginal(), event.getTarget(), false, random <= criticalHitChance ? 1 + getCriticalHitDamage() : 1.0f);
+			CriticalHitEvent crit = CommonHooks.fireCriticalHit(event.getPlayerPatch().getOriginal(), event.getTarget(), false, random <= criticalHitChance ? 1 + getCriticalHitDamage() : 1.0f);
 			if (crit != null)
 			{
 				event.getPlayerPatch().playSound(SoundEvents.PLAYER_ATTACK_CRIT, 1.0F, 1.0F);
@@ -230,7 +233,7 @@ public abstract class BattleStyle extends Skill
 	public void drawOnGui(BattleModeGui gui, SkillContainer container, GuiGraphics guiGraphics, float x, float y, float pt) {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
-        float meterLevel = container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get());
+        float meterLevel = container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL);
         poseStack.translate(Config.superMeterPositionX, Config.superMeterPositionY, 0);
         poseStack.scale((float) Config.superMeterScaleX, (float) Config.superMeterScaleY, 1f);
         guiGraphics.blit(CONTAINER_TEX, (int)x, (int)y, 0, 0, 128, 8, 128, 8);

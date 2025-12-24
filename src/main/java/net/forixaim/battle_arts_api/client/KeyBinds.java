@@ -3,7 +3,7 @@ package net.forixaim.battle_arts_api.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.forixaim.battle_arts_api.BattleArtsAPI;
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBinds

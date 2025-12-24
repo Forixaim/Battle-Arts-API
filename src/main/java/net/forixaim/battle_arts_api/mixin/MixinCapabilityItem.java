@@ -12,7 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.skill.*;
+import yesman.epicfight.registry.entries.EpicFightSkillDataKeys;
+import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -52,10 +53,10 @@ public abstract class MixinCapabilityItem
 
                 if (animations != null && !animations.isEmpty())
                 {
-                    if (dataManager.hasData(SkillDataKeys.PARRY_MOTION_COUNTER.get()) && blockType == GuardSkill.BlockType.ADVANCED_GUARD)
+                    if (dataManager.hasData(EpicFightSkillDataKeys.PARRY_MOTION_COUNTER) && blockType == GuardSkill.BlockType.ADVANCED_GUARD)
                     {
-                        int motionCounter = dataManager.getDataValue(SkillDataKeys.PARRY_MOTION_COUNTER.get());
-                        dataManager.setDataF(SkillDataKeys.PARRY_MOTION_COUNTER.get(), (v) -> v + 1);
+                        int motionCounter = dataManager.getDataValue(EpicFightSkillDataKeys.PARRY_MOTION_COUNTER);
+                        dataManager.setDataF(EpicFightSkillDataKeys.PARRY_MOTION_COUNTER, (v) -> v + 1);
                         motionCounter %= animations.size();
                         cir.setReturnValue(animations.get(motionCounter));
                     }

@@ -1,9 +1,8 @@
 package net.forixaim.battle_arts_api.battle_arts_skills.battle_style;
 
-import yesman.epicfight.api.utils.ExtendableEnum;
-import yesman.epicfight.api.utils.ExtendableEnumManager;
+import yesman.epicfight.api.utils.ExtensibleEnum;
+import yesman.epicfight.api.utils.ExtensibleEnumManager;
 
-public interface BattleStyleCategory extends ExtendableEnum
-{
-	ExtendableEnumManager<BattleStyleCategory> ENUM_MANAGER = new ExtendableEnumManager<> ("battle_style_category");
+public interface BattleStyleCategory extends ExtensibleEnum {
+    ExtensibleEnumManager<BattleStyleCategory> ENUM_MANAGER = new ExtensibleEnumManager<>("battle_style_category");
 }

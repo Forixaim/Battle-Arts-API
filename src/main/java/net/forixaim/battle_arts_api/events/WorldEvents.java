@@ -7,20 +7,21 @@ import net.forixaim.battle_arts_api.events.player.BattleArtsPlayerEvents;
 import net.forixaim.battle_arts_api.events.player.EquipmentSwitchEvent;
 import net.forixaim.battle_arts_api.events.player.PlayerDeathEvent;
 import net.forixaim.battle_arts_api.events.player.PlayerReviveEvent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
-@Mod.EventBusSubscriber(modid = BattleArtsAPI.MOD_ID)
+@EventBusSubscriber(modid = BattleArtsAPI.MOD_ID)
 public class WorldEvents
 {
     @SubscribeEvent
@@ -52,11 +53,11 @@ public class WorldEvents
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event)
     {
-        if (event.getEntity() instanceof Player player)
+        if (event.getEntity().level().isClientSide)
+            return;
+        if (event.getEntity() instanceof ServerPlayer player)
         {
-            if (player.level().isClientSide)
-                return;
-            ServerPlayerPatch serverPlayer = EpicFightCapabilities.getEntityPatch(player, ServerPlayerPatch.class);
+            ServerPlayerPatch serverPlayer = EpicFightCapabilities.getServerPlayerPatch(player);
             if (serverPlayer.getEventListener().triggerEvents(BattleArtsPlayerEvents.PLAYER_DEATH_EVENT, new PlayerDeathEvent<>(serverPlayer, event.getSource())))
             {
                 event.setCanceled(true);

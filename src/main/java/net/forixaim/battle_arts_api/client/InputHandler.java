@@ -6,6 +6,7 @@ import net.forixaim.battle_arts_api.mixin.ControlEngineInvoker;
 import net.minecraft.client.Minecraft;
 import yesman.epicfight.api.client.input.InputManager;
 import yesman.epicfight.client.ClientEngine;
+import yesman.epicfight.client.events.engine.ControlEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlot;
@@ -33,8 +34,8 @@ public class InputHandler
     private static void castActiveSkill(BattleArtsInputAction action, SkillSlot skillSlotConsumer, LocalPlayerPatch localPlayerPatch) {
         Runnable castActiveSkill = () -> {
             SkillContainer activeSlot = localPlayerPatch.getSkill(skillSlotConsumer);
-            if (activeSlot.sendCastRequest(localPlayerPatch, ClientEngine.getInstance().controlEngine).shouldReserveKey()) {
-                ((ControlEngineInvoker) ClientEngine.getInstance().controlEngine).invokeReserveKey(activeSlot.getSlot(), BattleArtsInputAction.COMBAT_ART.keyMapping());
+            if (activeSlot.sendCastRequest(localPlayerPatch, ControlEngine.getInstance()).shouldReserveKey()) {
+                ((ControlEngineInvoker) ClientEngine.getInstance()).invokeReserveKey(activeSlot.getSlot(), BattleArtsInputAction.COMBAT_ART.keyMapping());
             }
         };
         InputManager.triggerOnPress(action, castActiveSkill);
