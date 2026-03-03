@@ -1,9 +1,8 @@
 plugins {
     id 'eclipse'
     id 'idea'
-    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    id 'net.neoforged.gradle' version '7.+'
     id("org.spongepowered.mixin") version("0.7-SNAPSHOT")
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
     id("dev.echoellet.mc-safe-resources") version("0.0.2")
 }
@@ -17,7 +16,7 @@ base {
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
     withSourcesJar()
 }
 
@@ -107,9 +106,9 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation "net.neoforged:neoforge:${neoforge_version}"
     implementation fg.deobf("maven.modrinth:epic-fight:${epicfight_version}")
-    //implementation fg.deobf("curse.maven:project-mmo-353935:6142256")
+
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.2')
     implementation fg.deobf("maven.modrinth:epic-fight-skill-tree:${epicskills_version}")
     implementation fg.deobf("curse.maven:presence-footsteps-forge-433068:5015286")
@@ -160,9 +159,6 @@ tasks.named('jar', Jar).configure {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
-
-    // This is the preferred method to reobfuscate your jar file
-    finalizedBy 'reobfJar'
 }
 
 tasks.withType(JavaCompile).configureEach {
