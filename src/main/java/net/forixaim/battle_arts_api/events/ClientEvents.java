@@ -3,12 +3,13 @@ package net.forixaim.battle_arts_api.events;
 
 import net.forixaim.battle_arts_api.BattleArtsAPI;
 import net.forixaim.battle_arts_api.client.KeyBinds;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 
-@Mod.EventBusSubscriber(modid = BattleArtsAPI.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+
+@EventBusSubscriber(modid = BattleArtsAPI.MOD_ID, value = Dist.CLIENT)
 public class ClientEvents
 {
 	@SubscribeEvent

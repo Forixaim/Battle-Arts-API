@@ -9,31 +9,22 @@ import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillCategories
 import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.event.entity.player.CriticalHitEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.api.utils.ParseUtil;
+import yesman.epicfight.api.event.EntityEventListener;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
-import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -74,26 +65,23 @@ public abstract class BattleStyle extends Skill
 	protected final List<Skill> dependentSkills;
 
 
-	private final Map<Attribute, AttributeModifier> BattleStyleStatModifier;
 	protected Map<WeaponCategory, AnimationManager.AnimationAccessor<? extends StaticAnimation>> weaponDrawAnimations;
 
 	/**
 	 * super constructor must be called when creating a new battle style.
 	 * @param builder the builder.
 	 */
-	public BattleStyle(Builder<?> builder)
+	public BattleStyle(SkillBuilder<?> builder)
 	{
 		super (builder);
 		this.unarmedAttackAnimations = Lists.newArrayList();
 		this.unarmedLivingMotions = Maps.newHashMap();
 		this.unarmedBattleMotions = Maps.newHashMap();
-		this.BattleStyleStatModifier = Maps.newHashMap();
 		this.weaponDrawAnimations = Maps.newHashMap();
 		this.dependentSkills = Lists.newArrayList();
 		this.guardMaps = Maps.newHashMap();
 		this.unarmedInnateSkill = null;
 		this.unarmedPassiveSkill = null;
-		this.category = builder.battleStyleCategory;
 	}
 
 	public Skill getUnarmedInnateSkill()
@@ -117,35 +105,15 @@ public abstract class BattleStyle extends Skill
 		return unarmedLivingMotions;
 	}
 
-	public static Builder<BattleStyle> createBattleStyleBuilder()
-	{
-		return new Builder<>().setCategory(BattleArtsSkillCategories.BATTLE_STYLE).setResource(Resource.NONE);
-	}
-
-	@Override
-	public void setParams(CompoundTag parameters) {
-		super.setParams(parameters);
-
+    @Override
+    public void loadDatapackParameters(CompoundTag parameters) {
+        super.loadDatapackParameters(parameters);
         if (parameters.contains("max_meter"))
         {
             maxMeter = parameters.getInt("max_meter");
         }
+    }
 
-		this.BattleStyleStatModifier.clear();
-		if (parameters.contains("attribute_modifiers")) {
-			ListTag attributeList = parameters.getList("attribute_modifiers", 10);
-
-			for (Tag tag : attributeList) {
-				CompoundTag comp = (CompoundTag)tag;
-				String attribute = comp.getString("attribute");
-				Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.parse(attribute));
-				AttributeModifier modifier = ParseUtil.toAttributeModifier(comp);
-
-				this.BattleStyleStatModifier.put(attr, modifier);
-			}
-		}
-		jumpBoostPower = parameters.getFloat("jump_boost_power");
-	}
 
 	public float getJumpBoostPower()
 	{
@@ -158,30 +126,14 @@ public abstract class BattleStyle extends Skill
 	}
 
 	@Override
-	public void onInitiate(SkillContainer container)
+	public void onInitiate(SkillContainer container, EntityEventListener eventListener)
 	{
+
 		if (container.getExecutor() instanceof ServerPlayerPatch spp)
 		{
 			if (!(spp.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
 				spp.modifyLivingMotionByCurrentItem(false);
 		}
-
-        BattleStyleStatModifier.forEach((attribute, attributeModifier) -> {
-                    if ((container.getExecutor().getOriginal().getAttribute(attribute) != null && Objects.requireNonNull(container.getExecutor().getOriginal().getAttribute(attribute)).hasModifier(attributeModifier))) {
-                        Objects.requireNonNull(container.getExecutor().getOriginal().getAttribute(attribute)).addTransientModifier(attributeModifier);
-                    }
-                }
-        );
-		container.getExecutor().getEventListener().addEventListener(PlayerEventListener.EventType.DEAL_DAMAGE_EVENT_HURT, UNIVERSAL_BATTLE_STYLE_UUID, event ->
-		{
-			float random = container.getExecutor().getOriginal().getRandom().nextFloat();
-			CriticalHitEvent crit = ForgeHooks.getCriticalHit(event.getPlayerPatch().getOriginal(), event.getTarget(), false, random <= criticalHitChance ? 1 + getCriticalHitDamage() : 1.0f);
-			if (crit != null)
-			{
-				event.getPlayerPatch().playSound(SoundEvents.PLAYER_ATTACK_CRIT, 1.0F, 1.0F);
-			}
-
-		});
 	}
 
     @Override
@@ -200,24 +152,14 @@ public abstract class BattleStyle extends Skill
 			spp.modifyLivingMotionByCurrentItem(false);
 		}
 
-        BattleStyleStatModifier.forEach((attribute, attributeModifier) -> {
-                    if ((container.getExecutor().getOriginal().getAttribute(attribute) != null && Objects.requireNonNull(container.getExecutor().getOriginal().getAttribute(attribute)).hasModifier(attributeModifier))) {
-                        Objects.requireNonNull(container.getExecutor().getOriginal().getAttribute(attribute)).removeModifier(attributeModifier);
-                    }
-                }
-        );
-
 	}
 
-	public Set<Map.Entry<Attribute, AttributeModifier>> getModfierEntry() {
-		return this.BattleStyleStatModifier.entrySet();
-	}
 
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
-        if (BattleArtsAPI.debugMode && container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get()) < (maxMeter * 100) && !container.getExecutor().isLogicalClient()) {
-            container.getDataManager().setDataSyncF(CoreAPIDataKeys.METER_FILL.get(), data -> data + 1);
+        if (BattleArtsAPI.debugMode && container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL) < (maxMeter * 100) && !container.getExecutor().isLogicalClient()) {
+            container.getDataManager().setDataSyncF(CoreAPIDataKeys.METER_FILL, data -> data + 1);
         }
     }
 
@@ -230,7 +172,7 @@ public abstract class BattleStyle extends Skill
 	public void drawOnGui(BattleModeGui gui, SkillContainer container, GuiGraphics guiGraphics, float x, float y, float pt) {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
-        float meterLevel = container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get());
+        float meterLevel = container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL);
         poseStack.translate(Config.superMeterPositionX, Config.superMeterPositionY, 0);
         poseStack.scale((float) Config.superMeterScaleX, (float) Config.superMeterScaleY, 1f);
         guiGraphics.blit(CONTAINER_TEX, (int)x, (int)y, 0, 0, 128, 8, 128, 8);
@@ -248,49 +190,5 @@ public abstract class BattleStyle extends Skill
         int iconIndex = (int) ((meterLevel / 100) % METER_ICONS.size());
         guiGraphics.blit(METER_ICONS.get(iconIndex), (int) x - 32, (int) y - 12, 0, 0, 32, 32, 32, 32);
         poseStack.popPose();
-	}
-
-	public static class Builder<T extends BattleStyle> extends SkillBuilder<BattleStyle>
-	{
-		protected BattleStyleCategory battleStyleCategory;
-
-
-		public Builder()
-		{
-			super();
-			battleStyleCategory = BattleStyleCategories.STARTING;
-		}
-
-		@Override
-		public Builder<T> setRegistryName(ResourceLocation registryName) {
-			this.registryName = registryName;
-			return this;
-		}
-
-		public Builder<T> setCategory(SkillCategory category) {
-			this.category = category;
-			return this;
-		}
-
-		public Builder<T> setActivateType(ActivateType activateType) {
-			this.activateType = activateType;
-			return this;
-		}
-
-		public Builder<T> setResource(Resource resource) {
-			this.resource = resource;
-			return this;
-		}
-
-		public Builder<T> setCreativeTab(CreativeModeTab tab) {
-			this.tab = tab;
-			return this;
-		}
-
-		public Builder<T> setBattleStyleCategory(BattleStyleCategory category)
-		{
-			this.battleStyleCategory = category;
-			return this;
-		}
 	}
 }

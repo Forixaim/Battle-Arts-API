@@ -31,15 +31,15 @@ public abstract class ActiveSkill extends Skill
     protected float meterUsage;
 	protected float staminaConsumption;
 
-	public ActiveSkill(SkillBuilder<? extends Skill> builder) {
+	public ActiveSkill(SkillBuilder<?> builder) {
 		super(builder);
 		this.properties = Lists.newArrayList();
 	}
 
 	@Override
-	public void setParams(CompoundTag parameters)
+	public void loadDatapackParameters(CompoundTag parameters)
 	{
-		super.setParams(parameters);
+		super.loadDatapackParameters(parameters);
 		this.manaConsumption = parameters.getFloat("mana_consumption");
         this.meterUsage = parameters.getFloat("meter_usage");
 		this.staminaConsumption = parameters.getFloat("stamina_consumption");
@@ -60,9 +60,9 @@ public abstract class ActiveSkill extends Skill
     protected boolean hasMeter(SkillContainer container)
     {
 
-        if (container.getExecutor().getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getDataManager().hasData(CoreAPIDataKeys.METER_FILL.get()))
+        if (container.getExecutor().getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getDataManager().hasData(CoreAPIDataKeys.METER_FILL))
         {
-            return container.getExecutor().getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL.get()) >= meterUsage;
+            return container.getExecutor().getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL) >= meterUsage;
         }
         return meterUsage <= 0;
     }
@@ -87,22 +87,15 @@ public abstract class ActiveSkill extends Skill
     }
 
 	@Override
-	public void executeOnServer(SkillContainer container, FriendlyByteBuf args)
+	public void executeOnServer(SkillContainer container, CompoundTag args)
 	{
 		if (container.getExecutor() instanceof ServerPlayerPatch executor)
 		{
 			executor.setStamina(executor.getStamina() - staminaConsumption);
 		}
         if (hasMeter(container))
-            container.getExecutor().getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getDataManager().setDataSyncF(CoreAPIDataKeys.METER_FILL.get(), this::consumeMeter);
+            container.getExecutor().getSkill(BattleArtsSkillSlots.BATTLE_STYLE).getDataManager().setDataSyncF(CoreAPIDataKeys.METER_FILL, this::consumeMeter);
 		super.executeOnServer(container, args);
-	}
-
-
-
-	@Override
-	public void onInitiate(SkillContainer container) {
-		super.onInitiate(container);
 	}
 
 	@SuppressWarnings("unchecked")

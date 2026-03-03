@@ -4,16 +4,17 @@ package net.forixaim.battle_arts_api.events;
 import net.forixaim.battle_arts_api.BattleArtsAPI;
 import net.forixaim.battle_arts_api.client.InputHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 
-@Mod.EventBusSubscriber(modid = BattleArtsAPI.MOD_ID, value = Dist.CLIENT)
-public class ClientForgeEvents
+
+@EventBusSubscriber(modid = BattleArtsAPI.MOD_ID, value = Dist.CLIENT)
+public class ClientNeoEvents
 {
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event)
+    public static void onClientTick(ClientTickEvent.Post event)
     {
         if (Minecraft.getInstance().getOverlay() == null && Minecraft.getInstance().screen == null) {
             InputHandler.handleKeybinds();

@@ -11,14 +11,14 @@ import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleC
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleCategory;
 import net.forixaim.battle_arts_api.client.input.action.BattleArtsInputAction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 import yesman.epicfight.api.client.input.action.InputAction;
 import yesman.epicfight.skill.SkillCategory;
@@ -31,7 +31,6 @@ import yesman.epicfight.skill.SkillSlot;
 @Mod(BattleArtsAPI.MOD_ID)
 public class BattleArtsAPI
 {
-    //Local Debug Controls
     public static final boolean debugMode = false;
     public static final String MOD_ID = "battlearts_api";
     public static final Logger LOGGER = LogUtils.getLogger();
@@ -40,12 +39,10 @@ public class BattleArtsAPI
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
-    public BattleArtsAPI(FMLJavaModLoadingContext context) {
-        IEventBus modEventBus = context.getModEventBus();
+    public BattleArtsAPI(IEventBus bus, ModContainer container) {
         registerEnums();
-        registerRegistries(modEventBus);
-        MinecraftForge.EVENT_BUS.register(this);
-        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        registerRegistries(bus);
+        container.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     public void registerEnums()
