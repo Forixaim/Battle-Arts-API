@@ -2,6 +2,7 @@ package net.forixaim.battle_arts_api.battle_arts_skills.active;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillCategories;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillSlots;
 import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.minecraft.nbt.CompoundTag;
@@ -18,6 +19,7 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * This class is not supposed to be used, all class builders will exist within their own sub abstract classes.
@@ -35,6 +37,11 @@ public abstract class ActiveSkill extends Skill
 		super(builder);
 		this.properties = Lists.newArrayList();
 	}
+
+    public static <B extends SkillBuilder<B>> SkillBuilder<?> createActiveSkill(Function<B, ? extends Skill> constructor)
+    {
+        return new SkillBuilder<>(constructor).setResource(Resource.COOLDOWN);
+    }
 
 	@Override
 	public void loadDatapackParameters(CompoundTag parameters)

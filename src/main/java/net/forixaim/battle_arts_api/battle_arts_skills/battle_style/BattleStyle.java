@@ -27,6 +27,7 @@ import yesman.epicfight.world.capabilities.item.WeaponCapability;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 /**
@@ -49,6 +50,11 @@ public abstract class BattleStyle extends Skill
 			.mapToObj(i -> BattleArtsAPI.identifier("textures/gui/meter/super_icon_" + i + ".png")).toList();
 
     protected int maxMeter = 0;
+
+    public static <B extends SkillBuilder<B>> SkillBuilder<?> createBattleStyle(Function<B, ? extends Skill> constructor)
+    {
+        return new SkillBuilder<>(constructor).setCategory(BattleArtsSkillCategories.BATTLE_STYLE);
+    }
 
 	//From 0.0 to 1.0
 	protected float criticalHitChance = 0.5F;
@@ -128,12 +134,7 @@ public abstract class BattleStyle extends Skill
 	@Override
 	public void onInitiate(SkillContainer container, EntityEventListener eventListener)
 	{
-
-		if (container.getExecutor() instanceof ServerPlayerPatch spp)
-		{
-			if (!(spp.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
-				spp.modifyLivingMotionByCurrentItem(false);
-		}
+        super.onInitiate(container, eventListener);
 	}
 
     @Override
@@ -147,11 +148,7 @@ public abstract class BattleStyle extends Skill
 	@Override
 	public void onRemoved(SkillContainer container)
 	{
-		if (container.getExecutor() instanceof ServerPlayerPatch spp && !(spp.getHoldingItemCapability(InteractionHand.MAIN_HAND) instanceof WeaponCapability))
-		{
-			spp.modifyLivingMotionByCurrentItem(false);
-		}
-
+        super.onRemoved(container);
 	}
 
 

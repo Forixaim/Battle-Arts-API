@@ -35,7 +35,14 @@ public class InputHandler
         Runnable castActiveSkill = () -> {
             SkillContainer activeSlot = localPlayerPatch.getSkill(skillSlotConsumer);
             if (activeSlot.sendCastRequest(localPlayerPatch, ControlEngine.getInstance()).shouldReserveKey()) {
-                ((ControlEngineInvoker) ControlEngine.getInstance()).invokeReserveKey(activeSlot.getSlot(), BattleArtsInputAction.COMBAT_ART.keyMapping());
+                if (ControlEngine.getInstance() instanceof ControlEngineInvoker invoker)
+                {
+                    invoker.invokeReserveKey(skillSlotConsumer, action);
+                }
+            }
+            else
+            {
+                ControlEngine.getInstance().lockHotkeys();
             }
         };
         InputManager.triggerOnPress(action, castActiveSkill);
