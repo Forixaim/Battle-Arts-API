@@ -10,8 +10,6 @@ import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.CreativeModeTab;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.AnimationManager;
@@ -19,12 +17,14 @@ import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.event.EntityEventListener;
+import yesman.epicfight.api.event.EpicFightEventHooks;
+import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.skill.guard.GuardSkill;
-import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
-import yesman.epicfight.world.capabilities.item.WeaponCapability;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
+import yesman.epicfight.world.damagesource.StunType;
 
 import java.util.*;
 import java.util.function.Function;
@@ -33,10 +33,8 @@ import java.util.stream.IntStream;
 /**
  * This class extends the skill class and is mainly there as a framework for the Battle Styles which can modify certain things.
  */
-@SuppressWarnings("unchecked")
 public abstract class BattleStyle extends Skill
 {
-	private static final UUID UNIVERSAL_BATTLE_STYLE_UUID = UUID.fromString("705bfb84-a7c1-4726-bc7b-36cbabb84843");
 
 	protected float jumpBoostPower = 0.0F;
 
@@ -99,7 +97,6 @@ public abstract class BattleStyle extends Skill
 		return guardMaps;
 	}
 
-
 	public boolean modifiesUnarmedLMs()
 	{
 		return this.unarmedLivingMotions != null && !this.unarmedLivingMotions.isEmpty();
@@ -135,6 +132,16 @@ public abstract class BattleStyle extends Skill
 	public void onInitiate(SkillContainer container, EntityEventListener eventListener)
 	{
         super.onInitiate(container, eventListener);
+        eventListener.registerEvent(EpicFightEventHooks.Entity.TAKE_DAMAGE_INCOME, event -> {
+            if (event.getDamageSource() instanceof EpicFightDamageSource damageSource)
+            {
+                if (container.getDataManager().getDataValue(CoreAPIDataKeys.HIT_STOP_TICKS) > 0)
+                {
+                    damageSource.setStunType(StunType.NONE);
+                    damageSource.attachDamageModifier(ValueModifier.multiplier(0.5f));
+                }
+            }
+        }, this);
 	}
 
     @Override
@@ -157,6 +164,10 @@ public abstract class BattleStyle extends Skill
         super.updateContainer(container);
         if (BattleArtsAPI.debugMode && container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL) < (maxMeter * 100) && !container.getExecutor().isLogicalClient()) {
             container.getDataManager().setDataSyncF(CoreAPIDataKeys.METER_FILL, data -> data + 1);
+        }
+
+        if (container.getDataManager().hasData(CoreAPIDataKeys.HIT_STOP_TICKS) && container.getDataManager().getDataValue(CoreAPIDataKeys.HIT_STOP_TICKS) > 0) {
+            container.getDataManager().setDataSyncF(CoreAPIDataKeys.HIT_STOP_TICKS, data -> data - 1);
         }
     }
 

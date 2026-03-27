@@ -1,1 +1,2 @@
-- Updated Epic Fight to `20.14.3`
+# Core Changes
+- Fixed HitStop not actually being updated.
