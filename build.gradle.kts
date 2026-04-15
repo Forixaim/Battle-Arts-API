@@ -77,7 +77,6 @@ sourceSets.main {
 }
 
 repositories {
-
     fun RepositoryHandler.strictMaven(url: String, repoName: String? = null, vararg groups: String) {
         exclusiveContent {
             forRepository {

@@ -2,7 +2,6 @@
 
 
 pluginManagement {
-
     fun RepositoryHandler.strictMaven(url: String, vararg groups: String) {
         exclusiveContent {
             forRepository { maven(url) }
