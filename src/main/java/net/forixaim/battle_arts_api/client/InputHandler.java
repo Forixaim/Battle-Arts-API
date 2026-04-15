@@ -23,19 +23,22 @@ public class InputHandler
     {
         if (localPlayerPatch != null)
         {
-            castActiveSkill(BattleArtsInputAction.COMBAT_ART, BattleArtsSkillSlots.COMBAT_ART, localPlayerPatch);
-            castActiveSkill(BattleArtsInputAction.MANA_ART, BattleArtsSkillSlots.SPECIAL_ART, localPlayerPatch);
-            castActiveSkill(BattleArtsInputAction.BURST_ART, BattleArtsSkillSlots.BURST_ART, localPlayerPatch);
-            castActiveSkill(BattleArtsInputAction.ULTIMATE_ART, BattleArtsSkillSlots.ULTIMATE_ART, localPlayerPatch);
+            castActiveSkill(BattleArtsInputAction.COMBAT_ART, BattleArtsSkillSlots.COMBAT_ART);
+            castActiveSkill(BattleArtsInputAction.MANA_ART, BattleArtsSkillSlots.SPECIAL_ART);
+            castActiveSkill(BattleArtsInputAction.BURST_ART, BattleArtsSkillSlots.BURST_ART);
+            castActiveSkill(BattleArtsInputAction.ULTIMATE_ART, BattleArtsSkillSlots.ULTIMATE_ART);
         }
     }
 
-    private static void castActiveSkill(BattleArtsInputAction action, SkillSlot skillSlotConsumer, LocalPlayerPatch localPlayerPatch) {
+    private static void castActiveSkill(BattleArtsInputAction action, SkillSlot skillSlotConsumer) {
+        if (localPlayerPatch == null)
+            return;
         Runnable castActiveSkill = () -> {
-            SkillContainer activeSlot = localPlayerPatch.getSkill(skillSlotConsumer);
-            if (activeSlot.sendCastRequest(localPlayerPatch, ClientEngine.getInstance().controlEngine).shouldReserveKey()) {
-                ((ControlEngineInvoker) ClientEngine.getInstance().controlEngine).invokeReserveKey(activeSlot.getSlot(), BattleArtsInputAction.COMBAT_ART.keyMapping());
+            SkillContainer activeSlot = InputHandler.localPlayerPatch.getSkill(skillSlotConsumer);
+            if (activeSlot.sendCastRequest(InputHandler.localPlayerPatch, ClientEngine.getInstance().controlEngine).shouldReserveKey() && ClientEngine.getInstance().controlEngine instanceof ControlEngineInvoker invoker) {
+                invoker.invokeReserveKey(activeSlot.getSlot(), action.keyMapping());
             }
+
         };
         InputManager.triggerOnPress(action, castActiveSkill);
     }

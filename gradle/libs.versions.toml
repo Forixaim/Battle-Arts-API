@@ -1,0 +1,31 @@
+[versions]
+
+minecraft = "1.20.1"
+moddevgradle = "2.0.141"
+epic-fight = "20.14.16-mc1.20.1-forge"
+mixin = "0.8.5"
+
+# Version tags on Modrinth (usually the actual version number or a specific ID)
+embeddium = "0.3.31+mc1.20.1"
+epicskills = "20.2.7-1.20.1"
+
+mcSafeResources = "0.0.2"
+modPublish = "1.1.0"
+
+minecraft_range = "[1.20.1]"
+
+[libraries]
+
+embeddium = { module = "maven.modrinth:embeddium", version.ref = "embeddium" }
+epicFight = { module = "maven.modrinth:epic-fight", version.ref = "epic-fight" }
+epicskills = { module = "maven.modrinth:epic-fight-skill-tree", version.ref = "epicskills"}
+mixin = { module = "org.spongepowered:mixin", version.ref = "mixin" }
+
+[plugins]
+eclipse = { id = "eclipse"}
+idea = { id = "idea"}
+
+#Core Gradle Stuff
+moddevgradle = { id = "net.neoforged.moddev.legacyforge", version.ref = "moddevgradle" }
+publisher = { id = "me.modmuss50.mod-publish-plugin", version.ref = "modPublish"}
+mcSafeResources = { id = "dev.echoellet.mc-safe-resources", version.ref = "mcSafeResources" }
