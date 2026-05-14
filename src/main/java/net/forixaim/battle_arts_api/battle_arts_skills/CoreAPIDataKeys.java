@@ -18,5 +18,4 @@ public class CoreAPIDataKeys
 {
     public static final DeferredRegister<SkillDataKey<?>> DATA_KEYS = DeferredRegister.create(EpicFightRegistries.SKILL_DATA_KEY, BattleArtsAPI.MOD_ID);
     public static final DeferredHolder<SkillDataKey<?>, SkillDataKey<Float>> METER_FILL = DATA_KEYS.register("meter_fill", () -> SkillDataKey.createSkillDataKey(ByteBufCodecs.FLOAT, 0.0f, true, ActiveSkill.class, BattleStyle.class));
-    public static final DeferredHolder<SkillDataKey<?>, SkillDataKey<Integer>> HIT_STOP_TICKS = DATA_KEYS.register("hitstun_ticks", () -> SkillDataKey.createSkillDataKey(ByteBufCodecs.INT, 0, true, BattleStyle.class));
 }

@@ -7,6 +7,7 @@ import net.forixaim.battle_arts_api.BattleArtsAPI;
 import net.forixaim.battle_arts_api.Config;
 import net.forixaim.battle_arts_api.battle_arts_skills.BattleArtsSkillCategories;
 import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
+import net.forixaim.battle_arts_api.data.DamageAttribute;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -132,15 +133,12 @@ public abstract class BattleStyle extends Skill
 	public void onInitiate(SkillContainer container, EntityEventListener eventListener)
 	{
         super.onInitiate(container, eventListener);
-        eventListener.registerEvent(EpicFightEventHooks.Entity.TAKE_DAMAGE_INCOME, event -> {
-            if (event.getDamageSource() instanceof EpicFightDamageSource damageSource)
-            {
-                if (container.getDataManager().getDataValue(CoreAPIDataKeys.HIT_STOP_TICKS) > 0)
-                {
-                    damageSource.setStunType(StunType.NONE);
-                    damageSource.attachDamageModifier(ValueModifier.multiplier(0.5f));
-                }
-            }
+        eventListener.registerEvent(EpicFightEventHooks.Entity.DELIVER_DAMAGE_PRE, event -> {
+			float multiplier = DamageAttribute.calculateDamageMultiplier(event.getDamageSource());
+
+			if (multiplier != 1.0f) {
+				event.setModifiedDamage(event.getModifiedDamage() * multiplier);
+			}
         }, this);
 	}
 
@@ -164,10 +162,6 @@ public abstract class BattleStyle extends Skill
         super.updateContainer(container);
         if (BattleArtsAPI.debugMode && container.getDataManager().getDataValue(CoreAPIDataKeys.METER_FILL) < (maxMeter * 100) && !container.getExecutor().isLogicalClient()) {
             container.getDataManager().setDataSyncF(CoreAPIDataKeys.METER_FILL, data -> data + 1);
-        }
-
-        if (container.getDataManager().hasData(CoreAPIDataKeys.HIT_STOP_TICKS) && container.getDataManager().getDataValue(CoreAPIDataKeys.HIT_STOP_TICKS) > 0) {
-            container.getDataManager().setDataSyncF(CoreAPIDataKeys.HIT_STOP_TICKS, data -> data - 1);
         }
     }
 
