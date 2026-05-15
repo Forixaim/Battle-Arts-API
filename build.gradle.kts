@@ -50,6 +50,7 @@ repositories {
 
 base {
     archivesName = mod_id
+    version = getFullModVersion("neoforge")
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -96,6 +97,9 @@ dependencies {
     implementation(libs.epicskills)
 }
 
+private fun Project.getFullModVersion(variant: String): String = "${mod_version}-mc${minecraft_version}-$variant"
+
+
 val generateModMetadata = tasks.register<ProcessResources>("generateModMetadata") {
     val replaceProperties = mapOf(
             "minecraft_version"       to minecraft_version,
@@ -123,15 +127,47 @@ sourceSets.main.get().resources.srcDir(generateModMetadata)
 val TaskContainer.jar: TaskProvider<Jar>
     get() = named<Jar>("jar")
 
+fun Project.extractCurrentVersionChangelog(): String? {
+    val changelogFile = rootProject.file("CHANGELOG.md")
+    val fullChangelogText = changelogFile.readText()
+
+    // Extracts the current version changelog without the version heading 2 and "For Devs" heading 3.
+    val versionSectionRegex =
+        "(?s)## \\[$mod_version\\] - \\d{4}-\\d{2}-\\d{2}\\R(.*?)(?=\\R### For Devs|\\R## \\[.*?\\] |\\Z)"
+    val matcher = Regex(versionSectionRegex).find(fullChangelogText) ?: return null
+
+    val versionChangelog = matcher.groupValues[1]
+    return versionChangelog
+}
 
 publishMods {
+    val readme: File = project.file("CHANGELOG.md")
+    val readmeContent: String = readme.readText()
+
+    val versionSectionRegex = "(?s)## \\[$mod_version\\] - \\d{4}-\\d{2}-\\d{2}\\R(.*?)(?=\\R### For Devs|\\R## \\[.*?\\] |\\Z)"
+    val matchResult = Regex(versionSectionRegex).find(readmeContent) ?: throw RuntimeException("No changelog found for version $mod_version in CHANGELOG.md file")
+
+    val latestChangelog: String = matchResult.groupValues[1]
+    dryRun = false
+
+    changelog.set("""
+        |$latestChangelog
+        |
+        |**Tested against:**
+        |- **NeoForge:** $neoforge_version
+        |- **Minecraft:** $minecraft_version
+    """.trimMargin().trim())
+
+    // Type of the release: ALPHA, BETA, STABLE
+    type.set(STABLE)
+
+    // The name of the file appeared in publishing websites
+    displayName = getFullModVersion("neoforge")
+
     file.set(tasks.named<Jar>("jar").flatMap { it.archiveFile })
-    changelog.set(file("changelog.md").readText())
-    type.set(me.modmuss50.mpp.ReleaseType.BETA)
     modLoaders.add("neoforge")
 
     curseforge {
-
         projectId.set("1091499")
         projectSlug.set("battle-arts-api")
         accessToken.set(providers.environmentVariable("CURSEFORGE_TOKEN"))

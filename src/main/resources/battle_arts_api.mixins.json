@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "net.forixaim.battle_arts_api.mixin",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "battlearts_api.refmap.json",
+  "refmap": "battle_arts_api.refmap.json",
   "mixins": [
     "MixinCapabilityItem",
     "MixinWeaponInnateSkill"

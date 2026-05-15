@@ -10,6 +10,7 @@ import net.forixaim.battle_arts_api.battle_arts_skills.CoreAPIDataKeys;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleCategories;
 import net.forixaim.battle_arts_api.battle_arts_skills.battle_style.BattleStyleCategory;
 import net.forixaim.battle_arts_api.client.input.action.BattleArtsInputAction;
+import net.forixaim.battle_arts_api.registry.BattleArtsCustomData;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -32,7 +33,7 @@ import yesman.epicfight.skill.SkillSlot;
 public class BattleArtsAPI
 {
     public static final boolean debugMode = false;
-    public static final String MOD_ID = "battlearts_api";
+    public static final String MOD_ID = "battle_arts_api";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static ResourceLocation identifier(String path) {
@@ -63,6 +64,6 @@ public class BattleArtsAPI
     public void registerRegistries(IEventBus modEventBus)
     {
         CoreAPIDataKeys.DATA_KEYS.register(modEventBus);
-
+        BattleArtsCustomData.REGISTRY.register(modEventBus);
     }
 }

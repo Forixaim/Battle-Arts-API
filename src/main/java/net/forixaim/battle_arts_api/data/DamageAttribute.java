@@ -17,15 +17,15 @@ public record DamageAttribute(float slash, float puncture, float impact)
         float slash = 1;
         float puncture = 1;
         float impact = 1;
-        if (tag.contains("slash", CompoundTag.TAG_FLOAT))
+        if (tag.contains("slash", CompoundTag.TAG_DOUBLE))
         {
             slash = tag.getFloat("slash");
         }
-        if (tag.contains("puncture", CompoundTag.TAG_FLOAT))
+        if (tag.contains("puncture", CompoundTag.TAG_DOUBLE))
         {
             puncture = tag.getFloat("puncture");
         }
-        if (tag.contains("impact", CompoundTag.TAG_FLOAT))
+        if (tag.contains("impact", CompoundTag.TAG_DOUBLE))
         {
             impact = tag.getFloat("impact");
         }

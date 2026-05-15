@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public enum BattleArtsInputAction implements InputAction {
     COMBAT_ART(KeyBinds.USE_ART_1),
-    MANA_ART(KeyBinds.USE_MANA_ART),
+    MANA_ART(KeyBinds.USE_SPECIAL_ART),
     BURST_ART(KeyBinds.USE_BURST_ART),
     ULTIMATE_ART(KeyBinds.USE_ULTIMATE_ART);
 

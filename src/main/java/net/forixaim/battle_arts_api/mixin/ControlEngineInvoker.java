@@ -1,6 +1,5 @@
 package net.forixaim.battle_arts_api.mixin;
 
-import net.minecraft.client.KeyMapping;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import yesman.epicfight.api.client.input.action.InputAction;
