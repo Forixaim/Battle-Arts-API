@@ -39,7 +39,7 @@ public record DamageAttribute(float slash, float puncture, float impact)
             return 1.0f;
         }
         CapabilityItem item = EpicFightCapabilities.getItemStackCapability(source.getUsedItem());
-        Optional<DamageAttribute> attribute = item.getCustomData(BattleArtsCustomData.SLASH_MODIFIER);
+        Optional<DamageAttribute> attribute = item.getCustomData(BattleArtsCustomData.DAMAGE_ATTRIBUTE_MODIFIER);
         if (attribute.isEmpty())
         {
             return 1.0f;

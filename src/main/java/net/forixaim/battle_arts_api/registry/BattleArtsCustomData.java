@@ -11,7 +11,7 @@ public class BattleArtsCustomData
 {
     public static final CustomDataRegister REGISTRY = CustomDataRegister.createWeapon(BattleArtsAPI.MOD_ID);
 
-    public static final DeferredCustomData<CustomData<DamageAttribute>> SLASH_MODIFIER = REGISTRY.registerCustomData("slash_modifier",
+    public static final DeferredCustomData<CustomData<DamageAttribute>> DAMAGE_ATTRIBUTE_MODIFIER = REGISTRY.registerCustomData("damage_attribute_modifier",
             () -> CustomData.createDeserializable(DamageAttribute.DEFAULT, tag ->
             {
                 if (tag instanceof CompoundTag compoundTag)

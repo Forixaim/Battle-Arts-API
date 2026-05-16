@@ -137,7 +137,7 @@ public abstract class BattleStyle extends Skill
 			float multiplier = DamageAttribute.calculateDamageMultiplier(event.getDamageSource());
 
 			if (multiplier != 1.0f) {
-				event.setModifiedDamage(event.getModifiedDamage() * multiplier);
+				event.getDamageSource().attachDamageModifier(ValueModifier.multiplier(multiplier));
 			}
         }, this);
 	}

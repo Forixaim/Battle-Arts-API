@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0" : "battlearts_api:item/skillbook_ultimate_art"
+    "layer0" : "battle_arts_api:item/skillbook_ultimate_art"
   }
 }
