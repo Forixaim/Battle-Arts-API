@@ -135,7 +135,6 @@ public abstract class BattleStyle extends Skill
         super.onInitiate(container, eventListener);
         eventListener.registerEvent(EpicFightEventHooks.Entity.DELIVER_DAMAGE_PRE, event -> {
 			float multiplier = DamageAttribute.calculateDamageMultiplier(event.getDamageSource());
-
 			if (multiplier != 1.0f) {
 				event.getDamageSource().attachDamageModifier(ValueModifier.multiplier(multiplier));
 			}

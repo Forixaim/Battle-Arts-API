@@ -10,6 +10,10 @@ public interface AnimationTags
     TagKey<DamageType> SLASH = create("slash");
     TagKey<DamageType> PUNCTURE = create("puncture");
     TagKey<DamageType> IMPACT = create("impact");
+    //Hybrid Damage Types
+    TagKey<DamageType> REND = create("rend");
+    TagKey<DamageType> PIERCE = create("pierce");
+    TagKey<DamageType> CLEAVE = create("cleave");
 
     private static TagKey<DamageType> create(String tagName) {
         return TagKey.create(Registries.DAMAGE_TYPE, BattleArtsAPI.identifier(tagName));

@@ -3,6 +3,7 @@ package net.forixaim.battle_arts_api.data;
 import net.forixaim.battle_arts_api.animation_types.AnimationTags;
 import net.forixaim.battle_arts_api.registry.BattleArtsCustomData;
 import net.minecraft.nbt.CompoundTag;
+import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.damagesource.EpicFightDamageSource;
@@ -11,6 +12,16 @@ import java.util.Optional;
 
 public record DamageAttribute(float slash, float puncture, float impact)
 {
+    public static final float SLASH_DAMAGE_MODIFIER = 1.05f;
+    public static final float PUNCTURE_DAMAGE_MODIFIER = 0.9f;
+    public static final float IMPACT_DAMAGE_MODIFIER = 1.0f;
+
+    public static final float REND_DAMAGE_MODIFIER = 1.1f;
+    public static final float PIERCE_DAMAGE_MODIFIER = 1.0f;
+    public static final float CLEAVE_DAMAGE_MODIFIER = 1.15f;
+
+
+
     public static final DamageAttribute DEFAULT = new DamageAttribute(1, 1, 1);
     public static DamageAttribute deserialize(CompoundTag tag)
     {
@@ -44,12 +55,25 @@ public record DamageAttribute(float slash, float puncture, float impact)
         {
             return 1.0f;
         }
+        if (source.is(AnimationTags.REND))
+        {
+            return (attribute.get().slash + attribute.get().puncture()) / 2;
+        }
+        if (source.is(AnimationTags.PIERCE))
+        {
+            return (attribute.get().puncture() + attribute.get().impact()) / 2;
+        }
+        if (source.is(AnimationTags.CLEAVE))
+        {
+            return (attribute.get().slash() + attribute.get().impact()) / 2;
+        }
         if (source.is(AnimationTags.SLASH))
         {
             return attribute.get().slash;
         }
         if (source.is(AnimationTags.PUNCTURE))
         {
+            source.attachImpactModifier(ValueModifier.adder(5f));
             return attribute.get().puncture;
         }
         if (source.is(AnimationTags.IMPACT))
