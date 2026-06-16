@@ -19,6 +19,22 @@ fun RepositoryHandler.strictMaven(name: String, url: String, vararg includeGroup
     }
 }
 
+fun RepositoryHandler.parchmentMcRepository() {
+    strictMaven(
+        "ParchmentMC",
+        "https://maven.parchmentmc.org",
+        "org.parchmentmc", "org.parchmentmc.data",
+    )
+}
+
+fun RepositoryHandler.terraformersRepository() {
+    strictMaven(
+        "Terraformers (Mod Menu)",
+        "https://maven.terraformersmc.com",
+        "com.terraformersmc",
+    )
+}
+
 const val generationTaskGroup = "generation"
 
 private val Project.versionCatalog: VersionCatalog
@@ -72,6 +88,12 @@ private val Project.modAuthors: String
 val Project.groupId: String
     get() = gradleProperty("group_id")
 
+private val Project.fabricLoaderVersion: String
+    get() = catalogVersion("fabric-loader")
+
+private val Project.fabricApiVersion: String
+    get() = catalogVersion("fabric-api")
+
 private val Project.neoForgeVersion: String
     get() = catalogVersion("neoforge")
 
@@ -93,10 +115,14 @@ private fun Project.getFullModVersion(variant: String): String = "${modVersion}-
 
 enum class ModLoader(val conventionalName: String) {
     NeoForge("neoforge"),
+    Fabric("fabric"),
     ;
 
     val isForgeLike: Boolean
         get() = this == NeoForge
+
+    val isFabricLike: Boolean
+        get() = this == Fabric
 }
 
 private fun Project.extractCurrentVersionChangelog(): String? {
@@ -123,6 +149,7 @@ private fun Project.buildReleaseChangelog(
         val modLoaderName = modLoader.name
         val modLoaderVersion: String = when (modLoader) {
             ModLoader.NeoForge -> neoForgeVersion
+            ModLoader.Fabric -> fabricLoaderVersion
         }
 
         append(
@@ -132,9 +159,12 @@ private fun Project.buildReleaseChangelog(
     - **$modLoaderName:** $modLoaderVersion
     """.trimIndent()
         )
+
+        if (modLoader.isFabricLike) {
+            appendLine("- **Fabric API:** $fabricApiVersion")
+        }
     }
 }
-
 
 /**
  * Configures the mod publishing to mod sites (e.g., Modrinth, CurseForge).
@@ -152,6 +182,7 @@ fun Project.configureModPublish(
         }
     }
     extensions.getByType(ModPublishExtension::class.java).apply {
+        // Assumes `java { withSourcesJar() }` is called.
         val sourcesJar = project.tasks.named("sourcesJar")
 
         dryRun.set(false)
@@ -169,26 +200,33 @@ fun Project.configureModPublish(
         file.set(jarFile())
         additionalFiles.from(sourcesJar)
 
-        val requiredDependencies = emptyList<String>()
-        val optionalDependencies = emptyList<String>()
+        val requiredDependencies = buildList {
+            if (modLoader.isFabricLike) {
+                add("fabric-api")
+                add("forge-config-api-port")
+            }
+        }
+
+        val optionalDependencies =
+            buildList {
+                if (modLoader.isFabricLike) {
+                    add("modmenu")
+                }
+            }
 
         curseforge {
             accessToken.set(providers.environmentVariable("CURSEFORGE_TOKEN"))
+            projectId.set("405076")
             minecraftVersions.add(mcVersion)
-
-            projectId.set("933502")
-            projectSlug.set("battle-arts")
+            projectSlug.set("epic-fight-mod")
 
             requiredDependencies.forEach { requires(it) }
             optionalDependencies.forEach { optional(it) }
-
-            clientRequired.set(true)
-            serverRequired.set(true)
         }
 
         modrinth {
             accessToken.set(providers.environmentVariable("MODRINTH_TOKEN"))
-            projectId.set("Dd6vT4jF")
+            projectId.set("vu3NZ5Ma")
             minecraftVersions.add(mcVersion)
 
             requiredDependencies.forEach { requires(it) }
@@ -196,14 +234,15 @@ fun Project.configureModPublish(
         }
 
         discord {
-            webhookUrl.set(providers.environmentVariable("BATTLE_ARTS_DISCORD_URL"))
-            username.set("Battle Artist")
-            avatarUrl.set("https://cdn.discordapp.com/attachments/1404959979496013894/1487715037689810945/Acid.png?ex=69ca2619&is=69c8d499&hm=22ccf65d8fee84a316d829f1f063cb45c1f53918f1b4b2fda653c3ab7203d094&")
+            webhookUrl.set(providers.environmentVariable("DISCORD_WEBHOOK"))
+            dryRunWebhookUrl.set(providers.environmentVariable("DRY_RUN_DISCORD_WEBHOOK"))
+            username.set("Update Notification")
+            avatarUrl.set("https://i.imgur.com/FrxDviN.png")
             content.set(
                 changelog.map {
                     buildString {
                         appendLine("<@&1074034800849059930>")
-                        appendLine("# Battle Arts $modVersion is released.")
+                        appendLine("# Epic Fight $modVersion is out!")
                         appendLine(releaseChangelog)
                     }
                 }
@@ -219,12 +258,12 @@ fun Project.configureModPublish(
 }
 
 /**
- * The placeholders to be replaced with in NeoForge mod metadata (neoforge.mods.toml).
+ * The placeholders to be replaced with in mod loader metadata (fabric.mod.json, neoforge.mods.toml).
  *
  * ### **Example:**
  *
- * ```toml
- * modId = "${modId}"
+ * ```json
+ * "id": "${modId}"
  * ```
  *
  * Gradle projects are expected to use this in `tasks.processResources {}` configuration,
@@ -243,9 +282,22 @@ val Project.modPlatformMetadataReplaceProperties: Map<String, Any>
         "displayUrl" to modDisplayUrl,
         "description" to modDescription,
         "authors" to modAuthors,
+        // Fabric requires authors as a JSON array; Forge accepts a single string.
+        // Authors are read from gradle.properties, comma-separated.
+        // This converts `X, Y` -> `"X", "Y"` for Fabric support.
+        "authorEntries" to modAuthors
+            .split(",")
+            .joinToString(
+                separator = "\", \"",
+                prefix = "\"",
+                postfix = "\""
+            ) { it.trim() },
         "credits" to modCredits,
         "sourceCode" to modSourceCode,
         "minecraft" to mcVersion,
         "neoforgeVersion" to neoForgeVersion,
         "javaVersion" to javaVersion,
+        // TODO: when forgeconfigapiport ported to 26.1 import the project
+        // "forgeconfigapiportVersion" to catalogVersion("forgeconfigapiport"),
+        "fabricLoader" to fabricLoaderVersion,
     )

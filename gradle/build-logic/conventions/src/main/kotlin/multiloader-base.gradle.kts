@@ -13,6 +13,7 @@ plugins {
 version = modVersion
 group = groupId
 
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(javaVersion))

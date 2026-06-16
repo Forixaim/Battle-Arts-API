@@ -14,7 +14,7 @@ plugins {
     id("me.modmuss50.mod-publish-plugin")
 }
 
-val commonProject: Project = project(":common")
+val commonProject: Project = project(":Common")
 
 dependencies {
     compileOnly(commonProject)
