@@ -20,6 +20,8 @@ dependencies {
     // PAL implementation
     implementation(libs.playerAnimationLibrary)
     implementation(libs.bendableCuboids)
+    //CC API
+    implementation(libs.cardinal.components.api)
 }
 
 loom {

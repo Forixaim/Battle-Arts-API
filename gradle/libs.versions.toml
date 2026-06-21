@@ -21,6 +21,9 @@ asm = "9.7"
 player_animation_library = "1.2.3"
 bendable_cuboids = "2.0.2"
 
+# Fabric Exclusive
+cardinal-components-api = "8.0.0"
+
 # Plugins
 modPublish = "1.1.0"
 mcSafeResources = "0.0.2"
@@ -30,6 +33,7 @@ mcSafeResources = "0.0.2"
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
 fabric-minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+cardinal-components-api = { module = "maven.modrinth:cardinal-components-api", version.ref = "cardinal-components-api" }
 
 # p a l
 playerAnimationLibrary = { module = "maven.modrinth:player-animation-library", version.ref = "player_animation_library" }
